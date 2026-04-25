@@ -1,4 +1,4 @@
-# Gestion Formation — Excellent Training
+# Gestion Formation — Green Building
 
 Application web de gestion de formations continue.  
 Spring Boot 3 + PostgreSQL + JWT • React 18 + Recharts
