@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 
 const EMPTY = { nom: '', prenom: '', email: '', tel: '', structureId: '', profilId: '' };
@@ -63,11 +63,11 @@ export default function Participants() {
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Nom</th><th>Prénom</th><th>Email</th><th>Structure</th><th>Profil</th><th></th></tr>
+              <tr><th>Nom</th><th>Prénom</th><th>Email</th><th>Structure</th><th>Profil</th><th>Formations</th><th></th></tr>
             </thead>
             <tbody>
               {participants.length === 0 && (
-                <tr><td colSpan={6}><div className="empty"><div className="empty-icon">👥</div>Aucun participant</div></td></tr>
+                <tr><td colSpan={7}><div className="empty"><div className="empty-icon">👥</div>Aucun participant</div></td></tr>
               )}
               {participants.map(p => (
                 <tr key={p.id}>
@@ -76,6 +76,7 @@ export default function Participants() {
                   <td style={{ color: 'var(--muted)', fontSize: 12 }}>{p.email || '—'}</td>
                   <td><span className="pill pill-gray">{p.structure?.libelle}</span></td>
                   <td>{p.profil?.libelle}</td>
+                  <td><span className="pill pill-blue">{p.formationIds?.length || 0}</span></td>
                   <td>
                     <div className="flex gap-8">
                       <button className="btn btn-ghost btn-sm" onClick={() => openHistory(p)}>Historique</button>

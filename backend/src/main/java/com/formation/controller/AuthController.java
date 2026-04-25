@@ -20,7 +20,15 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+        System.out.println("POST /auth/login - Login attempt for user: " + request.getLogin());
+        try {
+            LoginResponse response = authService.login(request);
+            System.out.println("Login successful for user: " + request.getLogin() + " with role: " + response.getRole());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("Login failed for user " + request.getLogin() + ": " + e.getMessage());
+            throw e;
+        }
     }
 
     /** Admin creates user accounts */

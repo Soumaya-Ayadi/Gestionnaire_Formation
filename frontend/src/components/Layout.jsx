@@ -1,17 +1,17 @@
-import React from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../services/AuthContext.jsx';
 
 const NAV = [
   { to: '/',             icon: '⊞',  label: 'Tableau de bord', end: true },
-  { to: '/formations',   icon: '📋', label: 'Formations' },
-  { to: '/participants', icon: '👥', label: 'Participants' },
-  { to: '/formateurs',   icon: '🎓', label: 'Formateurs' },
+  { to: '/formations',   icon: '📋', label: 'Formations', roles: ['ROLE_ADMIN', 'ROLE_USER'] },
+  { to: '/participants', icon: '👥', label: 'Participants', roles: ['ROLE_ADMIN', 'ROLE_USER'] },
+  { to: '/formateurs',   icon: '🎓', label: 'Formateurs', roles: ['ROLE_ADMIN', 'ROLE_USER'] },
   { to: '/statistiques', icon: '📊', label: 'Statistiques',   roles: ['ROLE_ADMIN', 'ROLE_RESPONSABLE'] },
+  { to: '/referentiels', icon: '🗂️',  label: 'Référentiels', roles: ['ROLE_ADMIN', 'ROLE_USER'] },
 ];
 
 const ADMIN_NAV = [
-  { to: '/referentiels', icon: '🗂️',  label: 'Référentiels' },
+  
   { to: '/utilisateurs', icon: '🔑',  label: 'Utilisateurs' },
 ];
 
@@ -32,13 +32,12 @@ export default function Layout() {
   const { user, signOut } = useAuth();
   const { pathname } = useLocation();
   const isAdmin = user?.role === 'ROLE_ADMIN';
-  const canSeeStats = ['ROLE_ADMIN', 'ROLE_RESPONSABLE'].includes(user?.role);
 
   return (
     <div className="layout">
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <h2>Excellent Training</h2>
+          <h2>Green Building</h2>
           <p>Gestion de Formation</p>
         </div>
 

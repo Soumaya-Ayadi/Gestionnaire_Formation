@@ -1,5 +1,6 @@
 package com.formation.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -9,6 +10,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Formateur {
 
     @Id
@@ -36,7 +38,7 @@ public class Formateur {
     private String type;
 
     // only set when type = EXTERNE
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "employeur_id")
     private Employeur employeur;
 }

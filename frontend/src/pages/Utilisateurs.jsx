@@ -22,11 +22,23 @@ export default function Utilisateurs() {
   const save = async () => {
     setError(''); setSuccess('');
     try {
-      await api.post('/auth/create-user', form);
-      setSuccess('Compte créé. Les identifiants ont été envoyés par email.');
-      setTimeout(() => { setModal(false); load(); }, 1500);
+      const payload = {
+        login: form.login,
+        email: form.email,
+        role: { nom: form.role }
+      };
+      const response = await api.post('/utilisateurs', payload);
+      const data = response.data;
+      setSuccess(`Compte créé! Mot de passe temporaire: ${data.generatedPassword}`);
+      setTimeout(() => { setModal(false); load(); }, 2000);
     } catch (e) {
-      setError(e.response?.data?.error || 'Erreur lors de la création.');
+      const data = e.response?.data;
+      if (data && typeof data === 'object') {
+        const errors = Object.values(data).join(', ');
+        setError(errors || 'Erreur lors de la création.');
+      } else {
+        setError(data?.error || 'Erreur lors de la création.');
+      }
     }
   };
 

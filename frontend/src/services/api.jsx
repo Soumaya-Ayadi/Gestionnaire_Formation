@@ -6,10 +6,36 @@ const api = axios.create({
   baseURL: '/api',
 });
 
-// attach JWT on every request
+const parseJwtPayload = (token) => {
+  try {
+    const payload = token.split('.')[1];
+    return JSON.parse(atob(payload));
+  } catch {
+    return null;
+  }
+};
+
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  const payload = parseJwtPayload(token);
+  return !payload || !payload.exp || payload.exp * 1000 < Date.now();
+};
+
+const signOut = () => {
+  localStorage.clear();
+  window.location.href = '/login';
+};
+
+// attach JWT on every request, and force logout if token has expired
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    if (isTokenExpired(token)) {
+      signOut();
+      return Promise.reject(new Error('Token expired'));
+    }
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
@@ -18,8 +44,7 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.clear();
-      window.location.href = '/login';
+      signOut();
     }
     return Promise.reject(err);
   }

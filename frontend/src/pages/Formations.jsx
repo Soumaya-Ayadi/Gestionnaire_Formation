@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import  { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 
-const EMPTY_FORM = { titre: '', annee: new Date().getFullYear(), duree: 1, budget: '', lieu: '', domaineId: '', formateurId: '', participantIds: [] };
+const EMPTY_FORM = { titre: '', annee: new Date().getFullYear(), dateDebut: '', dateFin: '', budget: '', lieu: '', domaineId: '', formateurId: '', participantIds: [] };
 
 export default function Formations() {
   const [formations, setFormations] = useState([]);
@@ -28,7 +28,7 @@ export default function Formations() {
   const openEdit   = (f) => {
     setEditing(f);
     setForm({
-      titre: f.titre, annee: f.annee, duree: f.duree, budget: f.budget || '',
+      titre: f.titre, annee: f.annee, dateDebut: f.dateDebut, dateFin: f.dateFin, budget: f.budget || '',
       lieu: f.lieu || '', domaineId: f.domaine?.id || '', formateurId: f.formateur?.id || '',
       participantIds: f.participants?.map(p => p.id) || []
     });
@@ -42,7 +42,7 @@ export default function Formations() {
         ...form,
         domaineId: form.domaineId ? Number(form.domaineId) : null,
         formateurId: form.formateurId ? Number(form.formateurId) : null,
-        participantIds: form.participantIds.map(Number),
+        participantIds: form.participantIds.map(Number)
       };
       if (editing) await api.put(`/formations/${editing.id}`, payload);
       else await api.post('/formations', payload);
@@ -57,6 +57,23 @@ export default function Formations() {
     if (!window.confirm('Supprimer cette formation ?')) return;
     await api.delete(`/formations/${id}`);
     load();
+  };
+
+  const calculateDuration = (start, end) => {
+    if (!start || !end) return 0;
+    const d1 = new Date(start);
+    const d2 = new Date(end);
+    return Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
+  };
+
+  const getState = (start, end) => {
+    if (!start || !end) return 'À venir';
+    const today = new Date();
+    const d1 = new Date(start);
+    const d2 = new Date(end);
+    if (today < d1) return 'À venir';
+    if (today > d2) return 'Terminée';
+    return 'En cours';
   };
 
   const toggleParticipant = (id) => {
@@ -86,21 +103,25 @@ export default function Formations() {
           <table>
             <thead>
               <tr>
-                <th>Titre</th><th>Année</th><th>Domaine</th><th>Formateur</th>
+                <th>Titre</th><th>Année</th><th>État</th><th>Domaine</th><th>Formateur</th>
                 <th>Durée</th><th>Participants</th><th>Lieu</th><th></th>
               </tr>
             </thead>
             <tbody>
               {formations.length === 0 && (
-                <tr><td colSpan={8} className="empty"><div className="empty-icon">📋</div>Aucune formation</td></tr>
+                <tr><td colSpan={9} className="empty"><div className="empty-icon">📋</div>Aucune formation</td></tr>
               )}
-              {formations.map(f => (
+              {formations.map(f => {
+                const duration = calculateDuration(f.dateDebut, f.dateFin);
+                const state = getState(f.dateDebut, f.dateFin);
+                return (
                 <tr key={f.id}>
                   <td style={{ fontWeight: 500 }}>{f.titre}</td>
                   <td><span className="pill pill-blue">{f.annee}</span></td>
+                  <td><span className="pill pill-green">{state}</span></td>
                   <td>{f.domaine?.libelle}</td>
                   <td>{f.formateur ? `${f.formateur.prenom} ${f.formateur.nom}` : <span style={{ color: 'var(--muted)' }}>—</span>}</td>
-                  <td>{f.duree}j</td>
+                  <td>{duration}j ({new Date(f.dateDebut).toLocaleDateString('fr-FR')} - {new Date(f.dateFin).toLocaleDateString('fr-FR')})</td>
                   <td>
                     <span className="pill pill-green">{f.participants?.length || 0}</span>
                   </td>
@@ -112,7 +133,8 @@ export default function Formations() {
                     </div>
                   </td>
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
         </div>
@@ -134,8 +156,12 @@ export default function Formations() {
                 <input type="number" value={form.annee} onChange={e => setForm({ ...form, annee: e.target.value })} />
               </div>
               <div className="form-group">
-                <label>Durée (jours)</label>
-                <input type="number" min="1" value={form.duree} onChange={e => setForm({ ...form, duree: e.target.value })} />
+                <label>Date de début *</label>
+                <input type="date" value={form.dateDebut} onChange={e => setForm({ ...form, dateDebut: e.target.value })} />
+              </div>
+              <div className="form-group">
+                <label>Date de fin *</label>
+                <input type="date" value={form.dateFin} onChange={e => setForm({ ...form, dateFin: e.target.value })} />
               </div>
               <div className="form-group">
                 <label>Budget (DT)</label>

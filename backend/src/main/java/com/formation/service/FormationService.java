@@ -57,13 +57,27 @@ public class FormationService {
         }
 
         formationRepository.save(formation);
+
+        // Update participants' formationIds
+        for (Participant p : toAdd) {
+            if (!p.getFormationIds().contains(formationId)) {
+                p.getFormationIds().add(formationId);
+                participantRepository.save(p);
+            }
+        }
     }
 
     @Transactional
     public void removeParticipant(Long formationId, Long participantId) {
         Formation formation = getById(formationId);
-        formation.getParticipants().removeIf(p -> p.getId().equals(participantId));
+        Participant participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new IllegalArgumentException("Participant introuvable"));
+        formation.getParticipants().remove(participant);
         formationRepository.save(formation);
+
+        // Remove from participant's formationIds
+        participant.getFormationIds().remove(formationId);
+        participantRepository.save(participant);
     }
 
     public void delete(Long id) {
@@ -78,10 +92,13 @@ public class FormationService {
 
         formation.setTitre(req.getTitre());
         formation.setAnnee(req.getAnnee());
-        formation.setDuree(req.getDuree());
+        formation.setDateDebut(req.getDateDebut());
+        formation.setDateFin(req.getDateFin());
         formation.setBudget(req.getBudget());
         formation.setLieu(req.getLieu());
         formation.setDomaine(domaine);
+        // L'état est calculé automatiquement via @PrePersist et @PreUpdate
+        formation.setEtat(formation.getEtatCalcule());
 
         if (req.getFormateurId() != null) {
             Formateur formateur = formateurRepository.findById(req.getFormateurId())

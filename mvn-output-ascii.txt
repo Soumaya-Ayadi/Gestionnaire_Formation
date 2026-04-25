@@ -1,0 +1,120 @@
+[ERROR] COMPILATION ERROR : 
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/DataInitializer.java:[17,41] cannot find symbol
+  symbol: class CommandLineRunner
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/DataInitializer.java:[15,2] cannot find symbol
+  symbol: class Component
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/DataInitializer.java:[21,19] cannot find symbol
+  symbol:   class PasswordEncoder
+  location: class com.formation.DataInitializer
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/DataInitializer.java:[16,1] cannot find symbol
+  symbol:   class PasswordEncoder
+  location: class com.formation.DataInitializer
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/AuthController.java:[11,51] package org.springframework.security.access.prepost does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/service/AuthService.java:[14,51] package org.springframework.security.authentication does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/service/AuthService.java:[15,51] package org.springframework.security.authentication does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/service/AuthService.java:[16,41] package org.springframework.security.core does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/service/AuthService.java:[17,53] package org.springframework.security.core.userdetails does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/service/AuthService.java:[18,52] package org.springframework.security.crypto.password does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/service/AuthService.java:[27,19] cannot find symbol
+  symbol:   class AuthenticationManager
+  location: class com.formation.service.AuthService
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/JwtUtils.java:[7,53] package org.springframework.security.core.userdetails does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/service/AuthService.java:[31,19] cannot find symbol
+  symbol:   class PasswordEncoder
+  location: class com.formation.service.AuthService
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/service/AuthService.java:[24,1] cannot find symbol
+  symbol:   class AuthenticationManager
+  location: class com.formation.service.AuthService
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/JwtUtils.java:[41,42] cannot find symbol
+  symbol:   class UserDetails
+  location: class com.formation.security.JwtUtils
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/GlobalExceptionHandler.java:[5,43] package org.springframework.security.access does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/GlobalExceptionHandler.java:[6,51] package org.springframework.security.authentication does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/GlobalExceptionHandler.java:[33,69] cannot find symbol
+  symbol:   class BadCredentialsException
+  location: class com.formation.controller.GlobalExceptionHandler
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/GlobalExceptionHandler.java:[38,67] cannot find symbol
+  symbol:   class AccessDeniedException
+  location: class com.formation.controller.GlobalExceptionHandler
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/SimpleControllers.java:[8,51] package org.springframework.security.access.prepost does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/SimpleControllers.java:[88,19] cannot find symbol
+  symbol:   class PasswordEncoder
+  location: class com.formation.controller.UtilisateurController
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/SimpleControllers.java:[89,19] cannot find symbol
+  symbol:   class MailService
+  location: class com.formation.controller.UtilisateurController
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/SimpleControllers.java:[84,1] cannot find symbol
+  symbol:   class PasswordEncoder
+  location: class com.formation.controller.UtilisateurController
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/JwtFilter.java:[8,51] package org.springframework.security.authentication does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/JwtFilter.java:[9,49] package org.springframework.security.core.context does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/JwtFilter.java:[10,53] package org.springframework.security.core.userdetails does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/JwtFilter.java:[11,53] package org.springframework.security.core.userdetails does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/JwtFilter.java:[12,55] package org.springframework.security.web.authentication does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/JwtFilter.java:[23,19] cannot find symbol
+  symbol:   class UserDetailsService
+  location: class com.formation.security.JwtFilter
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/JwtFilter.java:[19,1] cannot find symbol
+  symbol:   class UserDetailsService
+  location: class com.formation.security.JwtFilter
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[6,51] package org.springframework.security.authentication does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[7,51] package org.springframework.security.authentication does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[8,55] package org.springframework.security.authentication.dao does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[9,83] package org.springframework.security.config.annotation.authentication.configuration does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[10,75] package org.springframework.security.config.annotation.method.configuration does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[11,67] package org.springframework.security.config.annotation.web.builders does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[12,72] package org.springframework.security.config.annotation.web.configuration does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[13,48] package org.springframework.security.config.http does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[14,53] package org.springframework.security.core.userdetails does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[15,50] package org.springframework.security.crypto.bcrypt does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[16,52] package org.springframework.security.crypto.password does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[17,40] package org.springframework.security.web does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[18,55] package org.springframework.security.web.authentication does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[26,2] cannot find symbol
+  symbol: class EnableWebSecurity
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[27,2] cannot find symbol
+  symbol: class EnableMethodSecurity
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[32,19] cannot find symbol
+  symbol:   class UserDetailsService
+  location: class com.formation.security.SecurityConfig
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[35,44] cannot find symbol
+  symbol:   class HttpSecurity
+  location: class com.formation.security.SecurityConfig
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[35,12] cannot find symbol
+  symbol:   class SecurityFilterChain
+  location: class com.formation.security.SecurityConfig
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[62,12] cannot find symbol
+  symbol:   class AuthenticationProvider
+  location: class com.formation.security.SecurityConfig
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[70,56] cannot find symbol
+  symbol:   class AuthenticationConfiguration
+  location: class com.formation.security.SecurityConfig
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[70,12] cannot find symbol
+  symbol:   class AuthenticationManager
+  location: class com.formation.security.SecurityConfig
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[75,12] cannot find symbol
+  symbol:   class PasswordEncoder
+  location: class com.formation.security.SecurityConfig
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/SecurityConfig.java:[28,1] cannot find symbol
+  symbol:   class UserDetailsService
+  location: class com.formation.security.SecurityConfig
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/UserDetailsServiceImpl.java:[6,51] package org.springframework.security.core.authority does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/UserDetailsServiceImpl.java:[14,48] cannot find symbol
+  symbol: class UserDetailsService
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/UserDetailsServiceImpl.java:[19,12] cannot find symbol
+  symbol:   class UserDetails
+  location: class com.formation.security.UserDetailsServiceImpl
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/UserDetailsServiceImpl.java:[19,64] cannot find symbol
+  symbol:   class UsernameNotFoundException
+  location: class com.formation.security.UserDetailsServiceImpl
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/security/UserDetailsServiceImpl.java:[7,1] package org.springframework.security.core.userdetails does not exist
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/AuthController.java:[28,6] cannot find symbol
+  symbol:   class PreAuthorize
+  location: class com.formation.controller.AuthController
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/GlobalExceptionHandler.java:[32,23] cannot find symbol
+  symbol:   class BadCredentialsException
+  location: class com.formation.controller.GlobalExceptionHandler
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/GlobalExceptionHandler.java:[37,23] cannot find symbol
+  symbol:   class AccessDeniedException
+  location: class com.formation.controller.GlobalExceptionHandler
+[ERROR] /C:/study/ing1/projects/prj_dev/Gestionnaire_Formation/backend/src/main/java/com/formation/controller/SimpleControllers.java:[97,6] cannot find symbol

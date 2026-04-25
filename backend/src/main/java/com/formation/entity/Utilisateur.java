@@ -20,7 +20,6 @@ public class Utilisateur {
     private String login;
 
     // stored hashed
-    @NotBlank
     @Column(nullable = false)
     private String password;
 

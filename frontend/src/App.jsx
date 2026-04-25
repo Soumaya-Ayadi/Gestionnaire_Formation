@@ -14,7 +14,10 @@ import Utilisateurs from './pages/Utilisateurs.jsx'
 function ProtectedRoute({ children, roles = [] }) {
   const { user } = useAuth()
   if (!user) return <Navigate to="/login" replace />
-  if (roles.length > 0 && !roles.includes(user.role)) return <Navigate to="/" replace />
+  if (roles.length > 0 && !roles.includes(user.role)) {
+    console.warn(`Access denied for ${user.login} (${user.role}). Required roles: ${roles.join(', ')}`)
+    return <Navigate to="/" replace />
+  }
   return children
 }
 
@@ -31,16 +34,28 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route index element={<Dashboard />} />
-            <Route path="formations" element={<Formations />} />
-            <Route path="participants" element={<Participants />} />
-            <Route path="formateurs" element={<Formateurs />} />
+            <Route path="formations" element={
+              <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
+                <Formations />
+              </ProtectedRoute>
+            } />
+            <Route path="participants" element={
+              <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
+                <Participants />
+              </ProtectedRoute>
+            } />
+            <Route path="formateurs" element={
+              <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
+                <Formateurs />
+              </ProtectedRoute>
+            } />
             <Route path="statistiques" element={
               <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_RESPONSABLE']}>
                 <Statistiques />
               </ProtectedRoute>
             } />
             <Route path="referentiels" element={
-              <ProtectedRoute roles={['ROLE_ADMIN']}>
+              <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
                 <Referentiels />
               </ProtectedRoute>
             } />

@@ -45,7 +45,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/utilisateurs/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers("/api/structures/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers("/api/profils/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/api/domaines/**").hasAuthority("ROLE_ADMIN")
+                // authenticated for basic entities
+                .requestMatchers("/api/domaines/**").authenticated()
                 // stats: admin or responsable
                 .requestMatchers("/api/statistiques/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RESPONSABLE")
                 // everything else: authenticated

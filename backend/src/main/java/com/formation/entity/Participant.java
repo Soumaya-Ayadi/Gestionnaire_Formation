@@ -3,6 +3,8 @@ package com.formation.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "participant")
@@ -37,4 +39,9 @@ public class Participant {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "profil_id", nullable = false)
     private Profil profil;
+
+    @ElementCollection
+    @CollectionTable(name = "participant_formations", joinColumns = @JoinColumn(name = "participant_id"))
+    @Column(name = "formation_id")
+    private List<Long> formationIds = new ArrayList<>();
 }

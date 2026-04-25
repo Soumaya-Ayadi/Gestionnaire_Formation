@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import api from '../services/api.jsx';
-
+/* eslint-disable react/prop-types */
 function SimpleTable({ title, endpoint, fields }) {
   const [items, setItems] = useState([]);
   const [modal, setModal] = useState(false);

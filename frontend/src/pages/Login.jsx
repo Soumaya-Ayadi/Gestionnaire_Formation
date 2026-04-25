@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../services/AuthContext.jsx';
 
@@ -30,8 +30,8 @@ export default function Login() {
   return (
     <div className="login-page">
       <div className="login-box">
-        <h1>Excellent Training</h1>
-        <p>Connectez-vous pour accéder à l'application</p>
+        <h1>Green Building</h1>
+        <p>Connectez-vous pour accéder au site</p>
 
         {error && <div className="login-error">{error}</div>}
 
