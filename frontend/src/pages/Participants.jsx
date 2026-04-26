@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 import { VALIDATORS, runValidation, useToast } from '../services/validation.jsx';
+import PropTypes from 'prop-types';
 
 const EMPTY = { nom: '', prenom: '', email: '', tel: '', structureId: '', profilId: '' };
 
@@ -22,6 +23,13 @@ function Field({ label, error, children, required }) {
     </div>
   );
 }
+
+Field.propTypes = {
+  label: PropTypes.string.isRequired,
+  error: PropTypes.string,
+  children: PropTypes.node.isRequired,
+  required: PropTypes.bool,
+};
 
 export default function Participants() {
   const toast = useToast();

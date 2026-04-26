@@ -64,7 +64,7 @@ export default function Dashboard() {
     <>
       <div style={{ marginBottom: 24 }}>
         <p style={{ color: 'var(--muted)', fontSize: 14 }}>
-          Bienvenue, <strong style={{ color: 'var(--text)' }}>{user?.login}</strong>. Voici un aperçu de l'activité du centre.
+          Bienvenue, <strong style={{ color: 'var(--text)' }}>{user?.login}</strong>. Voici un aperçu de l&apos;activité du centre.
         </p>
       </div>
       {renderStats()}
@@ -89,7 +89,7 @@ export default function Dashboard() {
     <>
       <div style={{ marginBottom: 24 }}>
         <p style={{ color: 'var(--muted)', fontSize: 14 }}>
-          Bienvenue, <strong style={{ color: 'var(--text)' }}>{user?.login}</strong>. Voici un aperçu de l'activité du centre.
+          Bienvenue, <strong style={{ color: 'var(--text)' }}>{user?.login}</strong>. Voici un aperçu de l&apos;activité du centre.
         </p>
       </div>
       {renderStats()}
@@ -122,7 +122,7 @@ export default function Dashboard() {
           <div style={{ fontSize: 40, marginBottom: 14 }}>📊</div>
           <h3 style={{ fontSize: 16, marginBottom: 8 }}>Tableau de bord statistique</h3>
           <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 20 }}>
-            Accédez aux analyses et rapports détaillés sur l'activité du centre.
+            Accédez aux analyses et rapports détaillés sur l&apos;activité du centre.
           </p>
           <a href="/statistiques" className="btn btn-primary">Consulter les statistiques →</a>
         </div>

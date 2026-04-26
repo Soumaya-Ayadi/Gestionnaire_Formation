@@ -1,5 +1,7 @@
 // ─── Validation helpers ───────────────────────────────────────────────────────
 
+import PropTypes from 'prop-types';
+
 export const VALIDATORS = {
   required: (v) => (!v || !String(v).trim()) ? 'Ce champ est requis' : '',
   email: (v) => {
@@ -70,6 +72,10 @@ export function ToastProvider({ children }) {
     </ToastCtx.Provider>
   );
 }
+
+ToastProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 export function useToast() {
   const push = useContext(ToastCtx);

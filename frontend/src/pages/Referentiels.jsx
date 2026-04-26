@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 import { useToast } from '../services/validation.jsx';
 
@@ -11,11 +11,11 @@ function SimpleTable({ title, endpoint, fields, icon }) {
   const [editing, setEditing] = useState(null);
   const [errors, setErrors] = useState({});
 
-  const load = async () => {
+  const load = useCallback(async () => {
     const { data } = await api.get(endpoint);
     setItems(data);
-  };
-  useEffect(() => { load(); }, []);
+  }, [endpoint]);
+  useEffect(() => { load(); }, [load]);
 
   const openCreate = () => {
     setEditing(null);

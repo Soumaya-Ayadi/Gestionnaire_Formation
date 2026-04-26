@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../services/api.jsx';
 import { useAuth } from '../services/AuthContext.jsx';
 import { VALIDATORS, runValidation, useToast } from '../services/validation.jsx';
+import PropTypes from 'prop-types';
 
 const EMPTY = { login: '', email: '', role: 'ROLE_USER' };
 const RULES = {
@@ -24,6 +25,13 @@ function Field({ label, error, children, required }) {
     </div>
   );
 }
+
+Field.propTypes = {
+  label: PropTypes.string.isRequired,
+  error: PropTypes.string,
+  children: PropTypes.node.isRequired,
+  required: PropTypes.bool,
+};
 
 export default function Utilisateurs() {
   const { user } = useAuth();
@@ -173,7 +181,7 @@ export default function Utilisateurs() {
                 <div className="modal-actions">
                   <button className="btn btn-ghost" onClick={() => setModal(false)}>Annuler</button>
                   <button className="btn btn-primary" onClick={save} disabled={saving}>
-                    {saving ? 'Création…' : 'Créer le compte'}
+                    {saving ? 'Création…' : 'Créer un compte'}
                   </button>
                 </div>
               </>
@@ -183,7 +191,7 @@ export default function Utilisateurs() {
                 <div style={{ fontSize: 44, marginBottom: 16 }}>🎉</div>
                 <h2 style={{ marginBottom: 8 }}>Compte créé avec succès</h2>
                 <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 24 }}>
-                  Communiquez ce mot de passe temporaire à l'utilisateur.
+                  Communiquez ce mot de passe temporaire à l&apos;utilisateur.
                 </p>
                 <div style={{
                   background: 'var(--bg)', border: '1.5px dashed var(--border)',

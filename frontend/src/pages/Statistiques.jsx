@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, LineChart, Line, Legend, Area, AreaChart, RadialBarChart, RadialBar,
+  PieChart, Pie, Cell, LineChart, Line, Legend, Area, AreaChart,
 } from 'recharts';
 import api from '../services/api.jsx';
 
@@ -29,6 +30,13 @@ function CustomTooltip({ active, payload, label, unit = '' }) {
   );
 }
 
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.array,
+  label: PropTypes.string,
+  unit: PropTypes.string,
+};
+
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
 function KpiCard({ label, value, sub, color = '#2d5be3', icon }) {
   return (
@@ -43,6 +51,14 @@ function KpiCard({ label, value, sub, color = '#2d5be3', icon }) {
   );
 }
 
+KpiCard.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  sub: PropTypes.string,
+  color: PropTypes.string,
+  icon: PropTypes.string,
+};
+
 // ─── Section Title ────────────────────────────────────────────────────────────
 function SectionTitle({ children }) {
   return (
@@ -56,6 +72,10 @@ function SectionTitle({ children }) {
   );
 }
 
+SectionTitle.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 // ─── Chart Card ──────────────────────────────────────────────────────────────
 function ChartCard({ title, subtitle, children, style }) {
   return (
@@ -68,6 +88,13 @@ function ChartCard({ title, subtitle, children, style }) {
     </div>
   );
 }
+
+ChartCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string,
+  children: PropTypes.node.isRequired,
+  style: PropTypes.object,
+};
 
 // ─── Pie Legend ───────────────────────────────────────────────────────────────
 function PieLegend({ data, nameKey, valueKey }) {
@@ -91,6 +118,12 @@ function PieLegend({ data, nameKey, valueKey }) {
     </div>
   );
 }
+
+PieLegend.propTypes = {
+  data: PropTypes.array.isRequired,
+  nameKey: PropTypes.string.isRequired,
+  valueKey: PropTypes.string.isRequired,
+};
 
 // ─── Custom Pie Label ─────────────────────────────────────────────────────────
 const RADIAN = Math.PI / 180;

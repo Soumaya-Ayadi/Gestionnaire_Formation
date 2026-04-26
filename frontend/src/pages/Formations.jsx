@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 import { VALIDATORS, runValidation, useToast } from '../services/validation.jsx';
+import PropTypes from 'prop-types';
 
 const EMPTY_FORM = {
   titre: '', annee: new Date().getFullYear(), dateDebut: '', dateFin: '',
@@ -24,6 +25,14 @@ function Field({ label, error, children, required, className = '' }) {
     </div>
   );
 }
+
+Field.propTypes = {
+  label: PropTypes.string.isRequired,
+  error: PropTypes.string,
+  children: PropTypes.node.isRequired,
+  required: PropTypes.bool,
+  className: PropTypes.string,
+};
 
 const STATE_CONFIG = {
   'À venir':  { cls: 'pill-blue',   emoji: '🕐' },
