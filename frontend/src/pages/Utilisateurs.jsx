@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api.jsx';
+import { useAuth } from '../services/AuthContext.jsx';
 
 const EMPTY = { login: '', email: '', role: 'ROLE_USER' };
 
 export default function Utilisateurs() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ROLE_ADMIN';
   const [users, setUsers] = useState([]);
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(EMPTY);
@@ -54,7 +57,7 @@ export default function Utilisateurs() {
     <div>
       <div className="flex-between mb-24">
         <span style={{ color: 'var(--muted)' }}>{users.length} utilisateur(s)</span>
-        <button className="btn btn-primary" onClick={openCreate}>+ Créer un compte</button>
+        {isAdmin && <button className="btn btn-primary" onClick={openCreate}>+ Créer un compte</button>}
       </div>
 
       <div className="card">
@@ -71,7 +74,7 @@ export default function Utilisateurs() {
                   <td><span className={`pill ${rolePill(u.role?.nom)}`}>{roleLabel(u.role?.nom)}</span></td>
                   <td><span className={`pill ${u.active ? 'pill-green' : 'pill-gray'}`}>{u.active ? 'Actif' : 'Inactif'}</span></td>
                   <td>
-                    <button className="btn btn-danger btn-sm" onClick={() => del(u.id)}>Supprimer</button>
+                    {isAdmin && <button className="btn btn-danger btn-sm" onClick={() => del(u.id)}>Supprimer</button>}
                   </td>
                 </tr>
               ))}
@@ -80,7 +83,7 @@ export default function Utilisateurs() {
         </div>
       </div>
 
-      {modal && (
+      {modal && isAdmin && (
         <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && setModal(false)}>
           <div className="modal" style={{ width: 420 }}>
             <h2>Créer un compte utilisateur</h2>

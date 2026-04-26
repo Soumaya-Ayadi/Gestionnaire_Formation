@@ -42,9 +42,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                 // admin only
-                .requestMatchers("/api/utilisateurs/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/api/structures/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/api/profils/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/api/utilisateurs/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RESPONSABLE")
+                // referentiels access for any authenticated user
+                .requestMatchers("/api/structures/**").authenticated()
+                .requestMatchers("/api/profils/**").authenticated()
                 // authenticated for basic entities
                 .requestMatchers("/api/domaines/**").authenticated()
                 // stats: admin or responsable

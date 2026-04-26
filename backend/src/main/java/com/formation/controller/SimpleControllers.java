@@ -6,6 +6,7 @@ import com.formation.service.MailService;
 import com.formation.service.PasswordGeneratorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,16 +18,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/domaines")
 @RequiredArgsConstructor
+@Slf4j
 class DomaineController {
     private final DomaineRepository repo;
 
-    @GetMapping  public List<Domaine> getAll() { return repo.findAll(); }
-    @PostMapping public Domaine create(@Valid @RequestBody Domaine d) { return repo.save(d); }
+    @GetMapping  public List<Domaine> getAll() { log.info("GET /domaines"); return repo.findAll(); }
+    @PostMapping public Domaine create(@Valid @RequestBody Domaine d) { log.info("POST /domaines - Creating domaine: {}", d.getLibelle()); return repo.save(d); }
     @PutMapping("/{id}") public Domaine update(@PathVariable Long id, @Valid @RequestBody Domaine d) {
-        d.setId(id); return repo.save(d);
+        log.info("PUT /domaines/{} - Updating domaine", id); d.setId(id); return repo.save(d);
     }
     @DeleteMapping("/{id}") public ResponseEntity<Void> delete(@PathVariable Long id) {
-        repo.deleteById(id); return ResponseEntity.noContent().build();
+        log.info("DELETE /domaines/{} - Deleting domaine", id); repo.deleteById(id); return ResponseEntity.noContent().build();
     }
 }
 
@@ -34,16 +36,17 @@ class DomaineController {
 @RestController
 @RequestMapping("/api/profils")
 @RequiredArgsConstructor
+@Slf4j
 class ProfilController {
     private final ProfilRepository repo;
 
-    @GetMapping  public List<Profil> getAll() { return repo.findAll(); }
-    @PostMapping public Profil create(@Valid @RequestBody Profil p) { return repo.save(p); }
+    @GetMapping  public List<Profil> getAll() { log.info("GET /profils"); return repo.findAll(); }
+    @PostMapping public Profil create(@Valid @RequestBody Profil p) { log.info("POST /profils - Creating profil: {}", p.getLibelle()); return repo.save(p); }
     @PutMapping("/{id}") public Profil update(@PathVariable Long id, @Valid @RequestBody Profil p) {
-        p.setId(id); return repo.save(p);
+        log.info("PUT /profils/{} - Updating profil", id); p.setId(id); return repo.save(p);
     }
     @DeleteMapping("/{id}") public ResponseEntity<Void> delete(@PathVariable Long id) {
-        repo.deleteById(id); return ResponseEntity.noContent().build();
+        log.info("DELETE /profils/{} - Deleting profil", id); repo.deleteById(id); return ResponseEntity.noContent().build();
     }
 }
 
@@ -51,16 +54,17 @@ class ProfilController {
 @RestController
 @RequestMapping("/api/structures")
 @RequiredArgsConstructor
+@Slf4j
 class StructureController {
     private final StructureRepository repo;
 
-    @GetMapping  public List<Structure> getAll() { return repo.findAll(); }
-    @PostMapping public Structure create(@Valid @RequestBody Structure s) { return repo.save(s); }
+    @GetMapping  public List<Structure> getAll() { log.info("GET /structures"); return repo.findAll(); }
+    @PostMapping public Structure create(@Valid @RequestBody Structure s) { log.info("POST /structures - Creating structure: {}", s.getLibelle()); return repo.save(s); }
     @PutMapping("/{id}") public Structure update(@PathVariable Long id, @Valid @RequestBody Structure s) {
-        s.setId(id); return repo.save(s);
+        log.info("PUT /structures/{} - Updating structure", id); s.setId(id); return repo.save(s);
     }
     @DeleteMapping("/{id}") public ResponseEntity<Void> delete(@PathVariable Long id) {
-        repo.deleteById(id); return ResponseEntity.noContent().build();
+        log.info("DELETE /structures/{} - Deleting structure", id); repo.deleteById(id); return ResponseEntity.noContent().build();
     }
 }
 
@@ -68,16 +72,17 @@ class StructureController {
 @RestController
 @RequestMapping("/api/employeurs")
 @RequiredArgsConstructor
+@Slf4j
 class EmployeurController {
     private final EmployeurRepository repo;
 
-    @GetMapping  public List<Employeur> getAll() { return repo.findAll(); }
-    @PostMapping public Employeur create(@Valid @RequestBody Employeur e) { return repo.save(e); }
+    @GetMapping  public List<Employeur> getAll() { log.info("GET /employeurs"); return repo.findAll(); }
+    @PostMapping public Employeur create(@Valid @RequestBody Employeur e) { log.info("POST /employeurs - Creating employeur: {}", e.getNomEmployeur()); return repo.save(e); }
     @PutMapping("/{id}") public Employeur update(@PathVariable Long id, @Valid @RequestBody Employeur e) {
-        e.setId(id); return repo.save(e);
+        log.info("PUT /employeurs/{} - Updating employeur", id); e.setId(id); return repo.save(e);
     }
     @DeleteMapping("/{id}") public ResponseEntity<Void> delete(@PathVariable Long id) {
-        repo.deleteById(id); return ResponseEntity.noContent().build();
+        log.info("DELETE /employeurs/{} - Deleting employeur", id); repo.deleteById(id); return ResponseEntity.noContent().build();
     }
 }
 
@@ -165,6 +170,7 @@ class UtilisateurController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         System.out.println("DELETE /utilisateurs/{} - Deleting user with id: {}" + id);
         try {

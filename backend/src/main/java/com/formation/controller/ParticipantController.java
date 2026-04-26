@@ -6,6 +6,7 @@ import com.formation.entity.Participant;
 import com.formation.service.ParticipantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,79 +15,80 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/participants")
 @RequiredArgsConstructor
+@Slf4j
 public class ParticipantController {
 
     private final ParticipantService participantService;
 
     @GetMapping
     public List<Participant> getAll() {
-        System.out.println("GET /participants - Fetching all participants");
+        log.info("GET /participants - Fetching all participants");
         List<Participant> participants = participantService.getAll();
-        System.out.println("Found " + participants.size() + " participants");
+        log.info("Found {} participants", participants.size());
         return participants;
     }
 
     @GetMapping("/{id}")
     public Participant getById(@PathVariable Long id) {
-        System.out.println("GET /participants/{id} - Fetching participant: " + id);
+        log.info("GET /participants/{} - Fetching participant", id);
         try {
             Participant participant = participantService.getById(id);
-            System.out.println("Found participant: " + participant.getPrenom() + " " + participant.getNom());
+            log.info("Found participant: {} {}", participant.getPrenom(), participant.getNom());
             return participant;
         } catch (Exception e) {
-            System.err.println("Participant not found: " + id);
+            log.error("Participant not found: {}", id, e);
             throw e;
         }
     }
 
     @GetMapping("/{id}/formations")
     public List<Formation> getFormationsHistory(@PathVariable Long id) {
-        System.out.println("GET /participants/{id}/formations - Fetching formation history: " + id);
+        log.info("GET /participants/{}/formations - Fetching formation history", id);
         try {
             List<Formation> formations = participantService.getFormationsHistory(id);
-            System.out.println("Found " + formations.size() + " formations for participant " + id);
+            log.info("Found {} formations for participant {}", formations.size(), id);
             return formations;
         } catch (Exception e) {
-            System.err.println("Error fetching formation history for participant " + id + ": " + e.getMessage());
+            log.error("Error fetching formation history for participant {}: {}", id, e.getMessage(), e);
             throw e;
         }
     }
 
     @PostMapping
     public Participant create(@Valid @RequestBody ParticipantRequest req) {
-        System.out.println("POST /participants - Creating participant: " + req.getPrenom() + " " + req.getNom());
+        log.info("POST /participants - Creating participant: {} {}", req.getPrenom(), req.getNom());
         try {
             Participant participant = participantService.create(req);
-            System.out.println("Participant created successfully: " + participant.getId());
+            log.info("Participant created successfully: {}", participant.getId());
             return participant;
         } catch (Exception e) {
-            System.err.println("Error creating participant: " + e.getMessage());
+            log.error("Error creating participant: {}", e.getMessage(), e);
             throw e;
         }
     }
 
     @PutMapping("/{id}")
     public Participant update(@PathVariable Long id, @Valid @RequestBody ParticipantRequest req) {
-        System.out.println("PUT /participants/{id} - Updating participant: " + id);
+        log.info("PUT /participants/{} - Updating participant", id);
         try {
             Participant participant = participantService.update(id, req);
-            System.out.println("Participant updated successfully: " + id);
+            log.info("Participant updated successfully: {}", id);
             return participant;
         } catch (Exception e) {
-            System.err.println("Error updating participant " + id + ": " + e.getMessage());
+            log.error("Error updating participant {}: {}", id, e.getMessage(), e);
             throw e;
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        System.out.println("DELETE /participants/{id} - Deleting participant: " + id);
+        log.info("DELETE /participants/{} - Deleting participant", id);
         try {
             participantService.delete(id);
-            System.out.println("Participant deleted successfully: " + id);
+            log.info("Participant deleted successfully: {}", id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            System.err.println("Error deleting participant " + id + ": " + e.getMessage());
+            log.error("Error deleting participant {}: {}", id, e.getMessage(), e);
             throw e;
         }
     }
