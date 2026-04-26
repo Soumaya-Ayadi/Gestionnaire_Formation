@@ -295,9 +295,11 @@ input.input-valid { border-color: var(--success); }
 /* ─── Modal ───────────────────────────────────── */
 .modal-backdrop {
   position: fixed; inset: 0; background: rgba(15,18,28,0.5);
-  display: flex; align-items: center; justify-content: center; z-index: 999;
+  display: flex; align-items: flex-start; justify-content: center; z-index: 999;
   backdrop-filter: blur(4px);
   animation: backdropIn 0.2s ease;
+  padding-top: 40px;
+  overflow-y: auto;
 }
 @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
 

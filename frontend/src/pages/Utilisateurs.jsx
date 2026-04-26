@@ -51,7 +51,7 @@ export default function Utilisateurs() {
   };
   useEffect(() => { load(); }, []);
 
-  const openCreate = () => { setForm(EMPTY); setErrors({}); setTouched({}); setGenPass(''); setModal(true); };
+  const openCreate = () => { setForm(EMPTY); setErrors({}); setTouched({}); setGenPass(''); setModal(true); window.scrollTo(0, 0); };
 
   const set = (key) => (e) => {
     const val = e.target.value;

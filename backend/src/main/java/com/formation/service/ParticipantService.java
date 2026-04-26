@@ -3,6 +3,7 @@ package com.formation.service;
 import com.formation.dto.ParticipantRequest;
 import com.formation.entity.*;
 import com.formation.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -34,8 +35,15 @@ public class ParticipantService {
         return participantRepository.save(buildFromRequest(participant, req));
     }
 
+    @Transactional
     public void delete(Long id) {
-        participantRepository.deleteById(id);
+        Participant participant = getById(id);
+        List<Formation> formations = formationRepository.findByParticipantId(id);
+        for (Formation formation : formations) {
+            formation.getParticipants().removeIf(p -> p.getId().equals(id));
+        }
+        formationRepository.saveAll(formations);
+        participantRepository.delete(participant);
     }
 
     public List<Formation> getFormationsHistory(Long participantId) {

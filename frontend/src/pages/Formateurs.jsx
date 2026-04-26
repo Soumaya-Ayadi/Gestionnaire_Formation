@@ -46,11 +46,11 @@ export default function Formateurs() {
   }, []);
   useEffect(() => { load(); }, [load]);
 
-  const openCreate = () => { setEditing(null); setForm(EMPTY); setErrors({}); setTouched({}); setModal(true); };
+  const openCreate = () => { setEditing(null); setForm(EMPTY); setErrors({}); setTouched({}); setModal(true); window.scrollTo(0, 0); };
   const openEdit = (fo) => {
     setEditing(fo);
     setForm({ nom: fo.nom, prenom: fo.prenom, email: fo.email, tel: fo.tel || '', type: fo.type, employeurId: fo.employeur?.id || '' });
-    setErrors({}); setTouched({}); setModal(true);
+    setErrors({}); setTouched({}); setModal(true); window.scrollTo(0, 0);
   };
 
   const set = (key) => (e) => {

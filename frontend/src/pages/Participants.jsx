@@ -52,11 +52,11 @@ export default function Participants() {
   }, []);
   useEffect(() => { load(); }, [load]);
 
-  const openCreate = () => { setEditing(null); setForm(EMPTY); setErrors({}); setTouched({}); setModal(true); };
+  const openCreate = () => { setEditing(null); setForm(EMPTY); setErrors({}); setTouched({}); setModal(true); window.scrollTo(0, 0); };
   const openEdit = (p) => {
     setEditing(p);
     setForm({ nom: p.nom, prenom: p.prenom, email: p.email || '', tel: p.tel || '', structureId: p.structure?.id || '', profilId: p.profil?.id || '' });
-    setErrors({}); setTouched({}); setModal(true);
+    setErrors({}); setTouched({}); setModal(true); window.scrollTo(0, 0);
   };
   const openHistory = async (p) => {
     const { data } = await api.get(`/participants/${p.id}/formations`);

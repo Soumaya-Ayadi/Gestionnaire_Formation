@@ -64,7 +64,14 @@ export default function Formations() {
   }, [filterAnnee]);
   useEffect(() => { load(); }, [load]);
 
-  const openCreate = () => { setEditing(null); setForm(EMPTY_FORM); setErrors({}); setTouched({}); setModal(true); };
+  const openCreate = () => { 
+    setEditing(null); 
+    setForm(EMPTY_FORM); 
+    setErrors({}); 
+    setTouched({}); 
+    setModal(true);
+    window.scrollTo(0, 0);
+  };
   const openEdit = (f) => {
     setEditing(f);
     setForm({
@@ -72,7 +79,10 @@ export default function Formations() {
       budget: f.budget || '', lieu: f.lieu || '', domaineId: f.domaine?.id || '',
       formateurId: f.formateur?.id || '', participantIds: f.participants?.map(p => p.id) || []
     });
-    setErrors({}); setTouched({}); setModal(true);
+    setErrors({}); 
+    setTouched({}); 
+    setModal(true);
+    window.scrollTo(0, 0);
   };
 
   const set = (key) => (e) => {

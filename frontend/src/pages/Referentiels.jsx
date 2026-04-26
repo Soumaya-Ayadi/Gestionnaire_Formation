@@ -22,12 +22,14 @@ function SimpleTable({ title, endpoint, fields, icon }) {
     setForm(Object.fromEntries(fields.map(f => [f.key, ''])));
     setErrors({});
     setModal(true);
+    window.scrollTo(0, 0);
   };
   const openEdit = (item) => {
     setEditing(item);
     setForm(Object.fromEntries(fields.map(f => [f.key, item[f.key] || ''])));
     setErrors({});
     setModal(true);
+    window.scrollTo(0, 0);
   };
 
   const validate = () => {
