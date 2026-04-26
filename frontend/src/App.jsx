@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './services/AuthContext.jsx'
+import { ToastProvider } from './services/validation.jsx'
 import Layout from './components/Layout.jsx'
 import Login from './pages/Login.jsx'
 import Dashboard from './pages/Dashboard.jsx'
@@ -15,7 +16,6 @@ function ProtectedRoute({ children, roles = [] }) {
   const { user } = useAuth()
   if (!user) return <Navigate to="/login" replace />
   if (roles.length > 0 && !roles.includes(user.role)) {
-    console.warn(`Access denied for ${user.login} (${user.role}). Required roles: ${roles.join(', ')}`)
     return <Navigate to="/" replace />
   }
   return children
@@ -29,44 +29,46 @@ ProtectedRoute.propTypes = {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-            <Route index element={<Dashboard />} />
-            <Route path="formations" element={
-              <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
-                <Formations />
-              </ProtectedRoute>
-            } />
-            <Route path="participants" element={
-              <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
-                <Participants />
-              </ProtectedRoute>
-            } />
-            <Route path="formateurs" element={
-              <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
-                <Formateurs />
-              </ProtectedRoute>
-            } />
-            <Route path="statistiques" element={
-              <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_RESPONSABLE']}>
-                <Statistiques />
-              </ProtectedRoute>
-            } />
-            <Route path="referentiels" element={
-              <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
-                <Referentiels />
-              </ProtectedRoute>
-            } />
-            <Route path="utilisateurs" element={
-              <ProtectedRoute roles={['ROLE_ADMIN']}>
-                <Utilisateurs />
-              </ProtectedRoute>
-            } />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+              <Route index element={<Dashboard />} />
+              <Route path="formations" element={
+                <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
+                  <Formations />
+                </ProtectedRoute>
+              } />
+              <Route path="participants" element={
+                <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
+                  <Participants />
+                </ProtectedRoute>
+              } />
+              <Route path="formateurs" element={
+                <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
+                  <Formateurs />
+                </ProtectedRoute>
+              } />
+              <Route path="statistiques" element={
+                <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_RESPONSABLE']}>
+                  <Statistiques />
+                </ProtectedRoute>
+              } />
+              <Route path="referentiels" element={
+                <ProtectedRoute roles={['ROLE_ADMIN', 'ROLE_USER']}>
+                  <Referentiels />
+                </ProtectedRoute>
+              } />
+              <Route path="utilisateurs" element={
+                <ProtectedRoute roles={['ROLE_ADMIN']}>
+                  <Utilisateurs />
+                </ProtectedRoute>
+              } />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   )
 }
