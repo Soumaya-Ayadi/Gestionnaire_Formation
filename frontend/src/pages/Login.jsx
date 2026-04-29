@@ -56,7 +56,7 @@ export default function Login() {
       <div className="login-form-side">
         <div className="login-box">
           <div className="login-box-header">
-            <h2>Bienvenue 👋</h2>
+            <h2>Bienvenue </h2>
             <p>Connectez-vous pour accéder à votre espace</p>
           </div>
 
@@ -109,7 +109,7 @@ export default function Login() {
           </form>
 
           <p style={{ marginTop: 24, fontSize: 11.5, color: 'var(--muted)', textAlign: 'center' }}>
-            Green Building · Centre de Formation
+            Excellent Training · Centre de Formation
           </p>
         </div>
       </div>

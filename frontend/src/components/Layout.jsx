@@ -34,7 +34,7 @@ export default function Layout() {
   const { user, signOut } = useAuth();
   const { pathname } = useLocation();
   const isAdmin = user?.role === 'ROLE_ADMIN';
-  const meta = PAGE_META[pathname] || { title: 'Green Building', sub: '' };
+  const meta = PAGE_META[pathname] || { title: 'Excellent Training', sub: '' };
 
   const initials = user?.login
     ? user.login.slice(0, 2).toUpperCase()
@@ -46,7 +46,7 @@ export default function Layout() {
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">🌿</div>
           <div>
-            <h2>Green Building</h2>
+            <h2>Excellent Training</h2>
             <p>Gestion de Formation</p>
           </div>
         </div>
