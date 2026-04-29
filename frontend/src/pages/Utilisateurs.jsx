@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import api from '../services/api.jsx';
 import { useAuth } from '../services/AuthContext.jsx';
 import { VALIDATORS, runValidation, useToast } from '../services/validation.jsx';
 import PropTypes from 'prop-types';
+import Swal from 'sweetalert2';
 
-
-const EMPTY = { login: '', email: ''};
+const EMPTY = { login: '', email: '' };
 const RULES = {
   login: [VALIDATORS.required, VALIDATORS.minLen(3)],
   email: [VALIDATORS.email],
@@ -38,13 +39,13 @@ export default function Utilisateurs() {
   const { user } = useAuth();
   const toast = useToast();
   const isAdmin = user?.role === 'ROLE_ADMIN';
-  const [users, setUsers]       = useState([]);
-  const [modal, setModal]       = useState(false);
-  const [form, setForm]         = useState(EMPTY);
-  const [errors, setErrors]     = useState({});
-  const [touched, setTouched]   = useState({});
-  const [saving, setSaving]     = useState(false);
-  const [genPass, setGenPass]   = useState('');
+  const [users, setUsers]     = useState([]);
+  const [modal, setModal]     = useState(false);
+  const [form, setForm]       = useState(EMPTY);
+  const [errors, setErrors]   = useState({});
+  const [touched, setTouched] = useState({});
+  const [saving, setSaving]   = useState(false);
+  const [genPass, setGenPass] = useState('');
 
   const load = async () => {
     const { data } = await api.get('/utilisateurs');
@@ -52,7 +53,9 @@ export default function Utilisateurs() {
   };
   useEffect(() => { load(); }, []);
 
-  const openCreate = () => { setForm(EMPTY); setErrors({}); setTouched({}); setGenPass(''); setModal(true); window.scrollTo(0, 0); };
+  const openCreate = () => {
+    setForm(EMPTY); setErrors({}); setTouched({}); setGenPass(''); setModal(true);
+  };
 
   const set = (key) => (e) => {
     const val = e.target.value;
@@ -61,6 +64,7 @@ export default function Utilisateurs() {
       setErrors(err => ({ ...err, [key]: runValidation({ [key]: val }, { [key]: RULES[key] })[key] || '' }));
     }
   };
+
   const blur = (key) => () => {
     setTouched(t => ({ ...t, [key]: true }));
     if (RULES[key]) setErrors(e => ({ ...e, [key]: runValidation(form, { [key]: RULES[key] })[key] || '' }));
@@ -75,7 +79,7 @@ export default function Utilisateurs() {
     try {
       const res = await api.post('/utilisateurs', { login: form.login, email: form.email, role: { nom: 'ROLE_USER' } });
       setGenPass(res.data.generatedPassword);
-      toast.success('Compte créé !', `Mot de passe temporaire affiché ci-dessous.`);
+      toast.success('Compte créé !', 'Mot de passe temporaire affiché ci-dessous.');
       load();
     } catch (e) {
       const data = e.response?.data;
@@ -85,9 +89,24 @@ export default function Utilisateurs() {
   };
 
   const del = async (u) => {
-    if (!window.confirm(`Supprimer le compte « ${u.login} » ?`)) return;
-    try { await api.delete(`/utilisateurs/${u.id}`); load(); toast.success('Compte supprimé'); }
-    catch { toast.error('Erreur', 'Impossible de supprimer cet utilisateur.'); }
+    const result = await Swal.fire({
+      title: 'Supprimer ce compte ?',
+      text: `Le compte « ${u.login} » sera définitivement supprimé.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e04444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+    });
+    if (!result.isConfirmed) return;
+    try {
+      await api.delete(`/utilisateurs/${u.id}`);
+      load();
+      toast.success('Compte supprimé');
+    } catch {
+      toast.error('Erreur', 'Impossible de supprimer cet utilisateur.');
+    }
   };
 
   const inputCls = (key) => errors[key] ? 'input-error' : (touched[key] && form[key] ? 'input-valid' : '');
@@ -105,11 +124,11 @@ export default function Utilisateurs() {
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Login</th><th>Email</th><th>Statut</th><th></th></tr>
+              <tr><th>Login</th><th>Email</th><th>Rôle</th><th>Statut</th><th></th></tr>
             </thead>
             <tbody>
               {users.length === 0 && (
-                <tr><td colSpan={4}>
+                <tr><td colSpan={5}>
                   <div className="empty">
                     <div className="empty-icon">🔑</div>
                     <div className="empty-text">Aucun utilisateur</div>
@@ -138,7 +157,8 @@ export default function Utilisateurs() {
                       <span className={`pill ${m.cls}`}>{m.icon} {m.label}</span>
                     </td>
                     <td>
-                      <span className={`status-dot ${u.active ? 'active' : 'inactive'}`} style={{ fontSize: 12, color: u.active ? 'var(--success)' : 'var(--muted)' }}>
+                      <span className={`status-dot ${u.active ? 'active' : 'inactive'}`}
+                        style={{ fontSize: 12, color: u.active ? 'var(--success)' : 'var(--muted)' }}>
                         {u.active ? 'Actif' : 'Inactif'}
                       </span>
                     </td>
@@ -155,9 +175,18 @@ export default function Utilisateurs() {
         </div>
       </div>
 
-      {modal && isAdmin && (
-        <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && !genPass && setModal(false)}>
-          <div className="modal" style={{ width: 440 }}>
+      {modal && isAdmin && createPortal(
+        <div
+          className="modal-backdrop"
+          onClick={e => e.target === e.currentTarget && !genPass && setModal(false)}
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.45)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 9999,
+          }}
+        >
+          <div className="modal" style={{ width: 440, maxHeight: '90vh', overflowY: 'auto' }}>
             {!genPass ? (
               <>
                 <div className="modal-header">
@@ -172,13 +201,6 @@ export default function Utilisateurs() {
                   <input type="email" value={form.email} onChange={set('email')} onBlur={blur('email')}
                     className={inputCls('email')} placeholder="utilisateur@exemple.com" />
                 </Field>
-                {/* <Field label="Rôle" required>
-                  <select value={form.role} onChange={set('role')}>
-                    <option value="ROLE_USER">👤 Utilisateur simple</option>
-                    <option value="ROLE_RESPONSABLE">📊 Responsable de centre</option>
-                    <option value="ROLE_ADMIN">🔑 Administrateur</option>
-                  </select>
-                </Field> */}
                 <div className="modal-actions">
                   <button className="btn btn-ghost" onClick={() => setModal(false)}>Annuler</button>
                   <button className="btn btn-primary" onClick={save} disabled={saving}>
@@ -187,7 +209,6 @@ export default function Utilisateurs() {
                 </div>
               </>
             ) : (
-              /* Success state */
               <div style={{ textAlign: 'center', padding: '12px 0' }}>
                 <div style={{ fontSize: 44, marginBottom: 16 }}>🎉</div>
                 <h2 style={{ marginBottom: 8 }}>Compte créé avec succès</h2>
@@ -198,7 +219,9 @@ export default function Utilisateurs() {
                   background: 'var(--bg)', border: '1.5px dashed var(--border)',
                   borderRadius: 8, padding: '16px 20px', marginBottom: 24,
                 }}>
-                  <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Mot de passe temporaire</div>
+                  <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Mot de passe temporaire
+                  </div>
                   <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 20, fontWeight: 600, color: 'var(--primary)', letterSpacing: '0.1em' }}>
                     {genPass}
                   </div>
@@ -210,7 +233,8 @@ export default function Utilisateurs() {
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
