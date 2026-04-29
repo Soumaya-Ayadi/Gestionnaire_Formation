@@ -1,14 +1,14 @@
 """
 Formation Management System - LARGE Scale Data Seeder
 ======================================================
-Generates data for 6 years (2020-2025) with:
+Generates data for 7 years (2020-2026) with:
   - 500  formateurs
   - 2000 participants
-  - 600  formations  (100/year across all 12 domaines)
-  - ~30 000+ formation_participant links
+  - 700  formations  (100/year across all 12 domaines)
+  - ~35 000+ formation_participant links
 
 Requirements:
-    pip install faker psycopg2-binary
+    pip install faker psycopg2-binary passlib
 
 Usage:
     python seed_data.py
@@ -38,13 +38,13 @@ DB_CONFIG = {
 
 # ── Volume knobs — tweak freely ──────────────────────────────────────────────
 START_YEAR = 2020
-END_YEAR   = 2025
+END_YEAR   = 2026           # ← extended to include 2026
 
 N_STRUCTURES        = 40
 N_EMPLOYEURS        = 30
 N_FORMATEURS        = 500
 N_PARTICIPANTS      = 2000
-FORMATIONS_PER_YEAR = 100   # x 6 years = 600 formations total
+FORMATIONS_PER_YEAR = 100   # x 7 years = 700 formations total
 MIN_PART_PER_FORM   = 15
 MAX_PART_PER_FORM   = 60
 N_USERS             = 50
@@ -181,12 +181,35 @@ def bcrypt_stub(password: str) -> str:
     return bcrypt.hash(password)
 
 def random_date_range(year: int):
-    month = random.randint(1, 12)
+    """
+    For 2026: only generate dates up to today (April 2026) so the seeder
+    doesn't create future-heavy data that all shows as A_VENIR.
+    Adjust the month cap as needed.
+    """
+    today = date.today()
+    if year < today.year:
+        month = random.randint(1, 12)
+    else:
+        # current year: cap month at current month so dates are realistic
+        month = random.randint(1, today.month)
+
     day   = random.randint(1, 25)
     start = date(year, month, day)
-    end   = start + timedelta(days=random.randint(3, 20))
-    if end >= date(year + 1, 1, 1):
-        end = date(year, 12, 28)
+    duration = random.randint(3, 20)
+    end   = start + timedelta(days=duration)
+
+    # Clamp to end of year
+    year_end = date(year, 12, 28)
+    if end > year_end:
+        end = year_end
+
+    # Clamp to today for current year (avoid far-future dates)
+    if year == today.year and end > today:
+        end = today
+    if year == today.year and start > today:
+        start = today - timedelta(days=duration)
+        end   = today
+
     return start, end
 
 def formation_state(d1: date, d2: date) -> str:
@@ -301,7 +324,8 @@ def seed(conn):
     conn.commit()
 
     # 8. Formations — guaranteed spread per domaine per year
-    print(f"[8/10] Seeding formations ({FORMATIONS_PER_YEAR}/year x {END_YEAR - START_YEAR + 1} years)...")
+    total_years = END_YEAR - START_YEAR + 1
+    print(f"[8/10] Seeding formations ({FORMATIONS_PER_YEAR}/year x {total_years} years = {FORMATIONS_PER_YEAR * total_years} total)...")
     formation_records = []  # (id, domaine_libelle, year)
 
     for year in range(START_YEAR, END_YEAR + 1):
@@ -401,6 +425,7 @@ def seed(conn):
 
 if __name__ == "__main__":
     print(f"Connecting to {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['dbname']} ...")
+    print(f"Seeding years: {START_YEAR} → {END_YEAR}")
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         seed(conn)

@@ -4,7 +4,8 @@ import { useAuth } from '../services/AuthContext.jsx';
 import { VALIDATORS, runValidation, useToast } from '../services/validation.jsx';
 import PropTypes from 'prop-types';
 
-const EMPTY = { login: '', email: '', role: 'ROLE_USER' };
+
+const EMPTY = { login: '', email: ''};
 const RULES = {
   login: [VALIDATORS.required, VALIDATORS.minLen(3)],
   email: [VALIDATORS.email],
@@ -72,7 +73,7 @@ export default function Utilisateurs() {
     if (Object.values(errs).some(Boolean)) return;
     setSaving(true);
     try {
-      const res = await api.post('/utilisateurs', { login: form.login, email: form.email, role: { nom: form.role } });
+      const res = await api.post('/utilisateurs', { login: form.login, email: form.email, role: { nom: 'ROLE_USER' } });
       setGenPass(res.data.generatedPassword);
       toast.success('Compte créé !', `Mot de passe temporaire affiché ci-dessous.`);
       load();
@@ -104,11 +105,11 @@ export default function Utilisateurs() {
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Login</th><th>Email</th><th>Rôle</th><th>Statut</th><th></th></tr>
+              <tr><th>Login</th><th>Email</th><th>Statut</th><th></th></tr>
             </thead>
             <tbody>
               {users.length === 0 && (
-                <tr><td colSpan={5}>
+                <tr><td colSpan={4}>
                   <div className="empty">
                     <div className="empty-icon">🔑</div>
                     <div className="empty-text">Aucun utilisateur</div>
@@ -171,13 +172,13 @@ export default function Utilisateurs() {
                   <input type="email" value={form.email} onChange={set('email')} onBlur={blur('email')}
                     className={inputCls('email')} placeholder="utilisateur@exemple.com" />
                 </Field>
-                <Field label="Rôle" required>
+                {/* <Field label="Rôle" required>
                   <select value={form.role} onChange={set('role')}>
                     <option value="ROLE_USER">👤 Utilisateur simple</option>
                     <option value="ROLE_RESPONSABLE">📊 Responsable de centre</option>
                     <option value="ROLE_ADMIN">🔑 Administrateur</option>
                   </select>
-                </Field>
+                </Field> */}
                 <div className="modal-actions">
                   <button className="btn btn-ghost" onClick={() => setModal(false)}>Annuler</button>
                   <button className="btn btn-primary" onClick={save} disabled={saving}>
