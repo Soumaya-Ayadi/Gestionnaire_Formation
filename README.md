@@ -21,7 +21,7 @@ Spring Boot 3 + PostgreSQL + JWT • React 18 + Recharts
 
 Créer une base PostgreSQL :
 ```sql
-CREATE DATABASE gestion_formation;
+CREATE DATABASE DevProject;
 ```
 
 ### 2. Backend
@@ -29,6 +29,7 @@ CREATE DATABASE gestion_formation;
 ```bash
 cd backend
 # Vérifier application.properties (DB credentials, mail SMTP)
+mvn clean install
 mvn spring-boot:run
 ```
 
@@ -63,12 +64,12 @@ gestion-formation/
 │       ├── security/        # JWT filter, config Spring Security
 │       ├── dto/             # DTOs (données entrantes)
 │       └── DataInitializer  # Seed initial (rôles + admin)
-├── frontend/
-│   └── src/
-│       ├── pages/           # Dashboard, Formations, Participants...
-│       ├── components/      # Layout, Sidebar
-│       └── services/        # axios instance, AuthContext
-└── GestionFormation.postman_collection.json
+└── frontend/
+    └── src/
+        ├── pages/           # Dashboard, Formations, Participants...
+        ├── components/      # Layout, Sidebar
+        └── services/        # axios instance, AuthContext
+
 ```
 
 ---
@@ -133,13 +134,3 @@ Importer `GestionFormation.postman_collection.json` dans Postman.
 
 ---
 
-## Validations (contrôles de saisie)
-
-- Login : min 3 caractères, unique
-- Nom / Prénom participant : min 2 caractères
-- Titre formation : min 3 caractères
-- Année : ≥ 2000
-- Email : format valide
-- Formation : min 4 participants
-- Formateur externe : employeur obligatoire
-- Mot de passe admin : complexe (défini par l'admin au démarrage)
