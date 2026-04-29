@@ -40,12 +40,31 @@ export default function Formateurs() {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [saving, setSaving] = useState(false);
+  
+  // Search/filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('ALL'); // 'ALL', 'INTERNE', 'EXTERNE'
 
   const load = useCallback(async () => {
     const [fo, em] = await Promise.all([api.get('/formateurs'), api.get('/employeurs')]);
     setFormateurs(fo.data); setEmployeurs(em.data);
   }, []);
   useEffect(() => { load(); }, [load]);
+
+  // Filtered formateurs based on search and type
+  const filteredFormateurs = formateurs.filter(fo => {
+    // Filter by type
+    if (filterType !== 'ALL' && fo.type !== filterType) return false;
+    
+    // Filter by search term (name or email)
+    if (searchTerm.trim() === '') return true;
+    
+    const term = searchTerm.toLowerCase().trim();
+    const fullName = `${fo.nom} ${fo.prenom}`.toLowerCase();
+    const email = (fo.email || '').toLowerCase();
+    
+    return fullName.includes(term) || email.includes(term);
+  });
 
   const openCreate = () => { setEditing(null); setForm(EMPTY); setErrors({}); setTouched({}); setModal(true); window.scrollTo(0, 0); };
   const openEdit = (fo) => {
@@ -119,11 +138,121 @@ export default function Formateurs() {
 
   const inputCls = (key) => errors[key] ? 'input-error' : (touched[key] && form[key] ? 'input-valid' : '');
 
+  // Clear search and filter
+  const clearFilters = () => {
+    setSearchTerm('');
+    setFilterType('ALL');
+  };
+
   return (
     <div>
+      {/* Search and Filter Bar */}
+      <div className="search-filter-bar" style={{ marginBottom: 24 }}>
+        <div className="flex-between" style={{ gap: 16, flexWrap: 'wrap' }}>
+          {/* Search Input */}
+          <div className="search-wrapper" style={{ flex: 1, minWidth: 250 }}>
+            <div style={{ position: 'relative' }}>
+              <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }}>
+                🔍
+              </span>
+              <input
+                type="text"
+                placeholder="Rechercher par nom ou email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px 10px 36px',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius)',
+                  fontSize: 14,
+                  background: 'white',
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Filter Buttons */}
+          <div className="filter-buttons" style={{ display: 'flex', gap: 8 }}>
+            <button
+              className={`filter-btn ${filterType === 'ALL' ? 'active' : ''}`}
+              onClick={() => setFilterType('ALL')}
+              style={{
+                padding: '8px 16px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border)',
+                background: filterType === 'ALL' ? 'white' : 'white',
+                color: filterType === 'ALL' ? 'var(--text)' : 'var(--text)',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 700,
+              }}
+            >
+              Tous
+            </button>
+            <button
+              className={`filter-btn ${filterType === 'INTERNE' ? 'active' : ''}`}
+              onClick={() => setFilterType('INTERNE')}
+              style={{
+                padding: '8px 16px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border)',
+                background: filterType === 'INTERNE' ? 'var(--success)' : 'white',
+                color: filterType === 'INTERNE' ? 'white' : 'var(--text)',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 500,
+              }}
+            >
+              🏢 Interne
+            </button>
+            <button
+              className={`filter-btn ${filterType === 'EXTERNE' ? 'active' : ''}`}
+              onClick={() => setFilterType('EXTERNE')}
+              style={{
+                padding: '8px 16px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border)',
+                background: filterType === 'EXTERNE' ? 'var(--warning)' : 'white',
+                color: filterType === 'EXTERNE' ? 'white' : 'var(--text)',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 500,
+              }}
+            >
+              🔗 Externe
+            </button>
+          </div>
+
+          {/* Clear Filters Button - only shows when filters are active */}
+          {(searchTerm || filterType !== 'ALL') && (
+            <button
+              onClick={clearFilters}
+              style={{
+                padding: '8px 16px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border)',
+                background: 'var(--danger-soft)',
+                color: 'var(--danger)',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 500,
+              }}
+            >
+              ✕ Effacer les filtres
+            </button>
+          )}
+        </div>
+      </div>
+
       <div className="flex-between mb-24">
         <span style={{ color: 'var(--muted)', fontSize: 13 }}>
-          <strong style={{ color: 'var(--text)' }}>{formateurs.length}</strong> formateur{formateurs.length !== 1 ? 's' : ''}
+          <strong style={{ color: 'var(--text)' }}>{filteredFormateurs.length}</strong> formateur{filteredFormateurs.length !== 1 ? 's' : ''}
+          {(searchTerm || filterType !== 'ALL') && (
+            <span style={{ marginLeft: 8, fontSize: 12 }}>
+              (sur {formateurs.length} total)
+            </span>
+          )}
         </span>
         <button className="btn btn-primary" onClick={openCreate}>+ Nouveau formateur</button>
       </div>
@@ -135,16 +264,37 @@ export default function Formateurs() {
               <tr><th>Nom</th><th>Prénom</th><th>Email</th><th>Téléphone</th><th>Type</th><th>Employeur</th><th></th></tr>
             </thead>
             <tbody>
-              {formateurs.length === 0 && (
-                <tr><td colSpan={7}>
-                  <div className="empty">
-                    <div className="empty-icon">🎓</div>
-                    <div className="empty-text">Aucun formateur enregistré</div>
-                    <div className="empty-sub">Cliquez sur « Nouveau formateur » pour commencer.</div>
-                  </div>
-                </td></tr>
+              {filteredFormateurs.length === 0 && (
+                <tr>
+                  <td colSpan={7}>
+                    <div className="empty">
+                      <div className="empty-icon">
+                        {searchTerm || filterType !== 'ALL' ? '🔍' : '🎓'}
+                      </div>
+                      <div className="empty-text">
+                        {searchTerm || filterType !== 'ALL' 
+                          ? 'Aucun résultat trouvé' 
+                          : 'Aucun formateur enregistré'}
+                      </div>
+                      <div className="empty-sub">
+                        {searchTerm || filterType !== 'ALL'
+                          ? 'Essayez d\'autres critères de recherche ou effacez les filtres.'
+                          : 'Cliquez sur « Nouveau formateur » pour commencer.'}
+                      </div>
+                      {(searchTerm || filterType !== 'ALL') && (
+                        <button 
+                          onClick={clearFilters}
+                          style={{ marginTop: 16 }}
+                          className="btn btn-ghost btn-sm"
+                        >
+                          ✕ Effacer les filtres
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
               )}
-              {formateurs.map(fo => (
+              {filteredFormateurs.map(fo => (
                 <tr key={fo.id}>
                   <td style={{ fontWeight: 600 }}>{fo.nom}</td>
                   <td>{fo.prenom}</td>
