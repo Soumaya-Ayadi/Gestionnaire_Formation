@@ -18,7 +18,13 @@ public class ParticipantService {
     private final FormationRepository formationRepository;
 
     public List<Participant> getAll() {
-        return participantRepository.findAll();
+        List<Participant> participants = participantRepository.findAll();
+        // Populate the transient formationCount for each participant
+        // using the formation_participant join table (the authoritative source).
+        participants.forEach(p ->
+            p.setFormationCount(formationRepository.findByParticipantId(p.getId()).size())
+        );
+        return participants;
     }
 
     public Participant getById(Long id) {

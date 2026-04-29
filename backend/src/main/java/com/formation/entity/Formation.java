@@ -1,11 +1,14 @@
 package com.formation.entity;
 
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "formation")
@@ -85,6 +88,7 @@ public class Formation {
      * Calcule la durée en jours basée sur les dates
      */
     @Transient
+    @JsonProperty("duree")
     public Integer getDureeCalculee() {
         if (dateDebut != null && dateFin != null) {
             return (int) java.time.temporal.ChronoUnit.DAYS.between(dateDebut, dateFin) + 1;

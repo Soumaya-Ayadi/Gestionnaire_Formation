@@ -10,7 +10,7 @@ export const VALIDATORS = {
   },
   phone: (v) => {
     if (!v) return '';
-    return /^[0-9\s+\-().]{8,15}$/.test(v) ? '' : 'Numéro invalide (8–15 chiffres)';
+    return /^\+?[\d\s\-().]{8,15}$/.test(v) ? '' : 'Numéro invalide (8–15 chiffres)';
   },
   minLen: (n) => (v) => (v && v.length >= n) ? '' : `Minimum ${n} caractères`,
   positiveNum: (v) => {

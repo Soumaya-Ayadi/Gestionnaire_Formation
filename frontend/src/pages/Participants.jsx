@@ -145,7 +145,7 @@ export default function Participants() {
                   <td><span className="pill pill-gray">{p.structure?.libelle}</span></td>
                   <td style={{ fontSize: 13, color: 'var(--text-2)' }}>{p.profil?.libelle}</td>
                   <td>
-                    <span className="pill pill-blue">{p.formationIds?.length || 0}</span>
+                    <span className="pill pill-blue">{p.formationCount ?? 0}</span>
                   </td>
                   <td>
                     <div className="flex gap-8">
@@ -227,7 +227,7 @@ export default function Participants() {
                       <td style={{ fontWeight: 500 }}>{f.titre}</td>
                       <td><span className="pill pill-blue">{f.annee}</span></td>
                       <td style={{ color: 'var(--muted)', fontSize: 12 }}>{f.domaine?.libelle}</td>
-                      <td style={{ fontFamily: 'DM Mono, monospace', fontSize: 13 }}>{f.duree}j</td>
+                      <td style={{ fontFamily: 'DM Mono, monospace', fontSize: 13 }}>{f.duree != null && f.duree > 0 ? `${f.duree}j` : '—'}</td>
                     </tr>
                   ))}
                 </tbody>

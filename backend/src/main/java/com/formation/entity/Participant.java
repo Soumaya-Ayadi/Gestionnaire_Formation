@@ -5,6 +5,8 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 @Entity
 @Table(name = "participant")
@@ -44,4 +46,8 @@ public class Participant {
     @CollectionTable(name = "participant_formations", joinColumns = @JoinColumn(name = "participant_id"))
     @Column(name = "formation_id")
     private List<Long> formationIds = new ArrayList<>();
+
+    @Transient
+    @JsonProperty("formationCount")
+    private int formationCount = 0;
 }
