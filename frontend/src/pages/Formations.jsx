@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 import { VALIDATORS, runValidation, useToast } from '../services/validation.jsx';
 import PropTypes from 'prop-types';
+import Swal from 'sweetalert2';
 
 const EMPTY_FORM = {
   titre: '', annee: new Date().getFullYear(), dateDebut: '', dateFin: '',
@@ -128,9 +129,26 @@ export default function Formations() {
   };
 
   const del = async (f) => {
-    if (!window.confirm(`Supprimer "${f.titre}" ?`)) return;
-    try { await api.delete(`/formations/${f.id}`); load(); toast.success('Formation supprimée'); }
-    catch { toast.error('Erreur', 'Impossible de supprimer cette formation.'); }
+    const result = await Swal.fire({
+      title: 'Supprimer la formation ?',
+      html: `<span style="color:#6b6f7e;font-size:14px">« <b>${f.titre}</b> » sera définitivement supprimée.</span>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#e04444',
+      cancelButtonColor: '#6b6f7e',
+      reverseButtons: true,
+      focusCancel: true,
+    });
+    if (!result.isConfirmed) return;
+    try {
+      await api.delete(`/formations/${f.id}`);
+      load();
+      toast.success('Formation supprimée', f.titre);
+    } catch {
+      toast.error('Erreur', 'Impossible de supprimer cette formation.');
+    }
   };
 
   const toggleParticipant = (id) => {

@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 import { VALIDATORS, runValidation, useToast } from '../services/validation.jsx';
 import PropTypes from 'prop-types';
+import Swal from 'sweetalert2';
 
 const EMPTY = { nom: '', prenom: '', email: '', tel: '', type: 'INTERNE', employeurId: '' };
 
@@ -94,11 +95,23 @@ export default function Formateurs() {
   };
 
   const del = async (fo) => {
-    if (!window.confirm(`Supprimer ${fo.prenom} ${fo.nom} ?`)) return;
+    const result = await Swal.fire({
+      title: 'Supprimer le formateur ?',
+      html: `<span style="color:#6b6f7e;font-size:14px"><b>${fo.prenom} ${fo.nom}</b> sera définitivement supprimé.</span>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#e04444',
+      cancelButtonColor: '#6b6f7e',
+      reverseButtons: true,
+      focusCancel: true,
+    });
+    if (!result.isConfirmed) return;
     try {
       await api.delete(`/formateurs/${fo.id}`);
       load();
-      toast.success('Formateur supprimé');
+      toast.success('Formateur supprimé', `${fo.prenom} ${fo.nom}`);
     } catch {
       toast.error('Erreur', 'Impossible de supprimer ce formateur.');
     }

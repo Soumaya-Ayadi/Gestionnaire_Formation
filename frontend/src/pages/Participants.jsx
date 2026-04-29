@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 import { VALIDATORS, runValidation, useToast } from '../services/validation.jsx';
 import PropTypes from 'prop-types';
+import Swal from 'sweetalert2';   // <-- ADD THIS
+
 
 const EMPTY = { nom: '', prenom: '', email: '', tel: '', structureId: '', profilId: '' };
 
@@ -93,10 +95,31 @@ export default function Participants() {
   };
 
   const del = async (p) => {
-    if (!window.confirm(`Supprimer ${p.prenom} ${p.nom} ?`)) return;
-    try { await api.delete(`/participants/${p.id}`); load(); toast.success('Participant supprimé'); }
-    catch { toast.error('Erreur', 'Impossible de supprimer ce participant.'); }
+    // Replace window.confirm with SweetAlert2
+    const result = await Swal.fire({
+      title: 'Supprimer le participant ?',
+      html: `<span style="color:#6b6f7e;font-size:14px"><b>${p.prenom} ${p.nom}</b> sera définitivement supprimé.</span>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#e04444',
+      cancelButtonColor: '#6b6f7e',
+      reverseButtons: true,
+      focusCancel: true,
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      await api.delete(`/participants/${p.id}`);
+      load();
+      toast.success('Participant supprimé', `${p.prenom} ${p.nom}`);
+    } catch {
+      toast.error('Erreur', 'Impossible de supprimer ce participant.');
+    }
   };
+
+  
 
   const inputCls = (key) => errors[key] ? 'input-error' : (touched[key] && form[key] ? 'input-valid' : '');
 

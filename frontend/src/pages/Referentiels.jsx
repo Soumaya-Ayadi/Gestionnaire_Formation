@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 import { useToast } from '../services/validation.jsx';
+import Swal from 'sweetalert2';   
 
 /* eslint-disable react/prop-types */
 function SimpleTable({ title, endpoint, fields, icon }) {
@@ -53,9 +54,27 @@ function SimpleTable({ title, endpoint, fields, icon }) {
   };
 
   const del = async (id) => {
-    if (!window.confirm('Supprimer cet élément ?')) return;
-    try { await api.delete(`${endpoint}/${id}`); load(); toast.success('Élément supprimé'); }
-    catch { toast.error('Erreur', 'Impossible de supprimer cet élément.'); }
+    const result = await Swal.fire({
+      title: 'Supprimer cet élément ?',
+      html: `<span style="color:#6b6f7e;font-size:14px">Cet élément sera définitivement supprimé.</span>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#e04444',
+      cancelButtonColor: '#6b6f7e',
+      reverseButtons: true,
+      focusCancel: true,
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      await api.delete(`${endpoint}/${id}`);
+      load();
+      toast.success('Élément supprimé');
+    } catch {
+      toast.error('Erreur', 'Impossible de supprimer cet élément.');
+    }
   };
 
   return (
