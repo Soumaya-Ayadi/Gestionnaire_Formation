@@ -1,0 +1,434 @@
+{
+  "info": {
+    "name": "Gestion Formation API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base", "value": "http://localhost:8081/api" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (admin)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.collectionVariables.set('token', json.token);",
+                "pm.test('Login réussi', () => pm.response.to.have.status(200));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"login\": \"admin\", \"password\": \"Admin@2025\"}"
+            }
+          }
+        },
+        {
+          "name": "Créer un compte utilisateur (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/auth/create-user",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"login\": \"user1\", \"email\": \"user1@formation.tn\", \"role\": \"ROLE_USER\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Domaines",
+      "item": [
+        {
+          "name": "Lister tous",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/domaines"
+          }
+        },
+        {
+          "name": "Créer un domaine",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/domaines",
+            "body": { "mode": "raw", "raw": "{\"libelle\": \"Informatique\"}" }
+          }
+        },
+        {
+          "name": "Modifier un domaine",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/domaines/1",
+            "body": { "mode": "raw", "raw": "{\"libelle\": \"Informatique & Réseaux\"}" }
+          }
+        },
+        {
+          "name": "Supprimer un domaine",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/domaines/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Structures",
+      "item": [
+        {
+          "name": "Lister toutes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/structures"
+          }
+        },
+        {
+          "name": "Créer une structure",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/structures",
+            "body": { "mode": "raw", "raw": "{\"libelle\": \"Direction Informatique\", \"type\": \"CENTRALE\"}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profils",
+      "item": [
+        {
+          "name": "Lister tous",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/profils"
+          }
+        },
+        {
+          "name": "Créer un profil",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/profils",
+            "body": { "mode": "raw", "raw": "{\"libelle\": \"Informaticien Bac+5\"}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Employeurs",
+      "item": [
+        {
+          "name": "Lister tous",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/employeurs"
+          }
+        },
+        {
+          "name": "Créer un employeur",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/employeurs",
+            "body": { "mode": "raw", "raw": "{\"nomEmployeur\": \"Société Externe SARL\"}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Formateurs",
+      "item": [
+        {
+          "name": "Lister tous",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/formateurs"
+          }
+        },
+        {
+          "name": "Créer formateur interne",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/formateurs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nom\": \"Ben Ali\", \"prenom\": \"Sami\", \"email\": \"sami.benali@green.tn\", \"tel\": \"22334455\", \"type\": \"INTERNE\"}"
+            }
+          }
+        },
+        {
+          "name": "Créer formateur externe",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/formateurs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nom\": \"Trabelsi\", \"prenom\": \"Imen\", \"email\": \"imen.t@externe.tn\", \"tel\": \"55667788\", \"type\": \"EXTERNE\", \"employeurId\": 1}"
+            }
+          }
+        },
+        {
+          "name": "Modifier un formateur",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/formateurs/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nom\": \"Ben Ali\", \"prenom\": \"Sami\", \"email\": \"sami@green.tn\", \"type\": \"INTERNE\"}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer un formateur",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/formateurs/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Participants",
+      "item": [
+        {
+          "name": "Lister tous",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/participants"
+          }
+        },
+        {
+          "name": "Créer un participant",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/participants",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nom\": \"Chaabane\", \"prenom\": \"Rania\", \"email\": \"rania@green.tn\", \"tel\": \"99001122\", \"structureId\": 1, \"profilId\": 1}"
+            }
+          }
+        },
+        {
+          "name": "Modifier un participant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/participants/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nom\": \"Chaabane\", \"prenom\": \"Rania\", \"email\": \"rania.c@green.tn\", \"structureId\": 1, \"profilId\": 1}"
+            }
+          }
+        },
+        {
+          "name": "Historique formations d'un participant",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/participants/1/formations"
+          }
+        },
+        {
+          "name": "Supprimer un participant",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/participants/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Formations",
+      "item": [
+        {
+          "name": "Lister toutes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/formations"
+          }
+        },
+        {
+          "name": "Filtrer par année",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base}}/formations?annee=2024",
+              "query": [{ "key": "annee", "value": "2024" }]
+            }
+          }
+        },
+        {
+          "name": "Créer une formation",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/formations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"titre\": \"Formation Spring Boot\", \"annee\": 2025, \"duree\": 3, \"budget\": 1500.0, \"lieu\": \"Tunis\", \"domaineId\": 1, \"formateurId\": 1, \"participantIds\": [1, 2, 3, 4]}"
+            }
+          }
+        },
+        {
+          "name": "Modifier une formation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/formations/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"titre\": \"Formation Spring Boot Avancé\", \"annee\": 2025, \"duree\": 5, \"budget\": 2000.0, \"lieu\": \"Tunis\", \"domaineId\": 1}"
+            }
+          }
+        },
+        {
+          "name": "Ajouter des participants",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base}}/formations/1/participants",
+            "body": { "mode": "raw", "raw": "[5, 6]" }
+          }
+        },
+        {
+          "name": "Retirer un participant",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/formations/1/participants/5"
+          }
+        },
+        {
+          "name": "Supprimer une formation",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/formations/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Statistiques",
+      "item": [
+        {
+          "name": "Formations par année",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/statistiques/formations-par-annee"
+          }
+        },
+        {
+          "name": "Participants par année",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/statistiques/participants-par-annee"
+          }
+        },
+        {
+          "name": "Participants par structure",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/statistiques/participants-par-structure"
+          }
+        },
+        {
+          "name": "Participants par profil",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/statistiques/participants-par-profil"
+          }
+        },
+        {
+          "name": "Formations par domaine",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/statistiques/formations-par-domaine"
+          }
+        },
+        {
+          "name": "Évolution participants (avec %)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/statistiques/evolution-participants"
+          }
+        }
+      ]
+    }
+  ]
+}
