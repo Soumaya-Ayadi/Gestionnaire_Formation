@@ -1,12 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 import { VALIDATORS, runValidation, useToast } from '../services/validation.jsx';
+import { usePagination, Pagination } from '../services/usePagination.jsx';
 import PropTypes from 'prop-types';
-import Swal from 'sweetalert2';   // <-- ADD THIS
+import Swal from 'sweetalert2';
 
+const PAGE_SIZE = 10;
 
 const EMPTY = { nom: '', prenom: '', email: '', tel: '', structureId: '', profilId: '' };
-
 const RULES = {
   nom:         [VALIDATORS.required, VALIDATORS.minLen(2)],
   prenom:      [VALIDATORS.required, VALIDATORS.minLen(2)],
@@ -25,7 +26,6 @@ function Field({ label, error, children, required }) {
     </div>
   );
 }
-
 Field.propTypes = {
   label: PropTypes.string.isRequired,
   error: PropTypes.string,
@@ -48,11 +48,25 @@ export default function Participants() {
   const [history, setHistory]           = useState([]);
   const [search, setSearch]             = useState('');
 
+  // Apply search filter only
+  const filtered = participants.filter(p =>
+    !search || `${p.nom} ${p.prenom} ${p.email}`.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const { page, setPage, totalPages, paginated, showAll, setShowAll, reset } =
+    usePagination(filtered, PAGE_SIZE);
+
   const load = useCallback(async () => {
     const [p, s, pr] = await Promise.all([api.get('/participants'), api.get('/structures'), api.get('/profils')]);
-    setParticipants(p.data); setStructures(s.data); setProfils(pr.data);
+    setParticipants(p.data); 
+    setStructures(s.data); 
+    setProfils(pr.data);
+    reset();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { reset(); }, [search]);
 
   const openCreate = () => { setEditing(null); setForm(EMPTY); setErrors({}); setTouched({}); setModal(true); window.scrollTo(0, 0); };
   const openEdit = (p) => {
@@ -62,7 +76,8 @@ export default function Participants() {
   };
   const openHistory = async (p) => {
     const { data } = await api.get(`/participants/${p.id}/formations`);
-    setHistory(data); setHistoryModal(p);
+    setHistory(data); 
+    setHistoryModal(p);
   };
 
   const set = (key) => (e) => {
@@ -87,7 +102,8 @@ export default function Participants() {
       const payload = { ...form, structureId: Number(form.structureId), profilId: Number(form.profilId) };
       if (editing) await api.put(`/participants/${editing.id}`, payload);
       else await api.post('/participants', payload);
-      setModal(false); load();
+      setModal(false); 
+      load();
       toast.success(editing ? 'Participant modifié' : 'Participant ajouté', `${form.prenom} ${form.nom}`);
     } catch (e) {
       toast.error('Erreur', e.response?.data?.error || 'Une erreur est survenue.');
@@ -95,7 +111,6 @@ export default function Participants() {
   };
 
   const del = async (p) => {
-    // Replace window.confirm with SweetAlert2
     const result = await Swal.fire({
       title: 'Supprimer le participant ?',
       html: `<span style="color:#6b6f7e;font-size:14px"><b>${p.prenom} ${p.nom}</b> sera définitivement supprimé.</span>`,
@@ -110,34 +125,34 @@ export default function Participants() {
     });
     if (!result.isConfirmed) return;
 
-    try {
-      await api.delete(`/participants/${p.id}`);
-      load();
+    try { 
+      await api.delete(`/participants/${p.id}`); 
+      load(); 
       toast.success('Participant supprimé', `${p.prenom} ${p.nom}`);
-    } catch {
-      toast.error('Erreur', 'Impossible de supprimer ce participant.');
+    } catch { 
+      toast.error('Erreur', 'Impossible de supprimer ce participant.'); 
     }
   };
 
-  
-
   const inputCls = (key) => errors[key] ? 'input-error' : (touched[key] && form[key] ? 'input-valid' : '');
-
-  const filtered = participants.filter(p =>
-    !search || `${p.nom} ${p.prenom} ${p.email}`.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <div>
       <div className="flex-between mb-24">
         <div className="flex gap-10">
           <span style={{ color: 'var(--muted)', fontSize: 13 }}>
-            <strong style={{ color: 'var(--text)' }}>{participants.length}</strong> participant{participants.length !== 1 ? 's' : ''}
+            <strong style={{ color: 'var(--text)' }}>{filtered.length}</strong> participant{filtered.length !== 1 ? 's' : ''}
+            {search && (
+              <span style={{ marginLeft: 8, fontSize: 12 }}>
+                (sur {participants.length} total)
+              </span>
+            )}
           </span>
           <input
-            placeholder="🔍  Rechercher…"
-            value={search} onChange={e => setSearch(e.target.value)}
-            style={{ width: 220, fontSize: 13 }}
+            placeholder="🔍  Rechercher par nom, prénom ou email..."
+            value={search} 
+            onChange={e => setSearch(e.target.value)}
+            style={{ width: 260, fontSize: 13, padding: '8px 12px', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}
           />
         </div>
         <button className="btn btn-primary" onClick={openCreate}>+ Nouveau participant</button>
@@ -150,16 +165,26 @@ export default function Participants() {
               <tr><th>Nom</th><th>Prénom</th><th>Email</th><th>Téléphone</th><th>Structure</th><th>Profil</th><th>Formations</th><th></th></tr>
             </thead>
             <tbody>
-              {filtered.length === 0 && (
+              {paginated.length === 0 && (
                 <tr><td colSpan={8}>
                   <div className="empty">
                     <div className="empty-icon">👥</div>
-                    <div className="empty-text">{search ? 'Aucun résultat' : 'Aucun participant'}</div>
+                    <div className="empty-text">{search ? 'Aucun résultat trouvé' : 'Aucun participant'}</div>
                     <div className="empty-sub">{search ? 'Essayez un autre terme de recherche.' : 'Cliquez sur « Nouveau participant » pour commencer.'}</div>
+                    {search && (
+                      <button 
+                        onClick={() => setSearch('')}
+                        style={{ marginTop: 16 }}
+                        className="btn btn-ghost btn-sm"
+                      >
+                        ✕ Effacer la recherche
+                      </button>
+                    )}
                   </div>
-                </td></tr>
+                </td>
+               </tr>
               )}
-              {filtered.map(p => (
+              {paginated.map(p => (
                 <tr key={p.id}>
                   <td style={{ fontWeight: 600 }}>{p.nom}</td>
                   <td>{p.prenom}</td>
@@ -168,7 +193,7 @@ export default function Participants() {
                   <td><span className="pill pill-gray">{p.structure?.libelle}</span></td>
                   <td style={{ fontSize: 13, color: 'var(--text-2)' }}>{p.profil?.libelle}</td>
                   <td>
-                    <span className="pill pill-blue">{p.formationCount ?? 0}</span>
+                    <span className="pill pill-blue">{p.formationCount ?? p.formationIds?.length ?? 0}</span>
                   </td>
                   <td>
                     <div className="flex gap-8">
@@ -182,6 +207,12 @@ export default function Participants() {
             </tbody>
           </table>
         </div>
+
+        <Pagination
+          page={page} setPage={setPage}
+          totalPages={totalPages} total={filtered.length}
+          pageSize={PAGE_SIZE} showAll={showAll} setShowAll={setShowAll}
+        />
       </div>
 
       {/* Create / Edit modal */}
@@ -242,19 +273,28 @@ export default function Participants() {
                 <div className="empty-text">Aucune formation suivie</div>
               </div>
             ) : (
-              <table>
-                <thead><tr><th>Titre</th><th>Année</th><th>Domaine</th><th>Durée</th></tr></thead>
-                <tbody>
-                  {history.map(f => (
-                    <tr key={f.id}>
-                      <td style={{ fontWeight: 500 }}>{f.titre}</td>
-                      <td><span className="pill pill-blue">{f.annee}</span></td>
-                      <td style={{ color: 'var(--muted)', fontSize: 12 }}>{f.domaine?.libelle}</td>
-                      <td style={{ fontFamily: 'DM Mono, monospace', fontSize: 13 }}>{f.duree != null && f.duree > 0 ? `${f.duree}j` : '—'}</td>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Titre</th>
+                      <th>Année</th>
+                      <th>Domaine</th>
+                      <th>Durée</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {history.map(f => (
+                      <tr key={f.id}>
+                        <td style={{ fontWeight: 500 }}>{f.titre}</td>
+                        <td><span className="pill pill-blue">{f.annee}</span></td>
+                        <td style={{ color: 'var(--muted)', fontSize: 12 }}>{f.domaine?.libelle}</td>
+                        <td style={{ fontFamily: 'DM Mono, monospace', fontSize: 13 }}>{f.duree != null && f.duree > 0 ? `${f.duree}j` : '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
             <div className="modal-actions">
               <button className="btn btn-ghost" onClick={() => setHistoryModal(null)}>Fermer</button>

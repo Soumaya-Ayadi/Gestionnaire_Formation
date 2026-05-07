@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 import { VALIDATORS, runValidation, useToast } from '../services/validation.jsx';
+import { usePagination, Pagination } from '../services/usePagination.jsx';
 import PropTypes from 'prop-types';
-import Swal from 'sweetalert2';
+
+const PAGE_SIZE = 10;
 
 const EMPTY_FORM = {
   titre: '', annee: new Date().getFullYear(), dateDebut: '', dateFin: '',
@@ -26,7 +28,6 @@ function Field({ label, error, children, required, className = '' }) {
     </div>
   );
 }
-
 Field.propTypes = {
   label: PropTypes.string.isRequired,
   error: PropTypes.string,
@@ -56,21 +57,31 @@ export default function Formations() {
   const [filterAnnee, setFilterAnnee] = useState('');
   const [search, setSearch]           = useState('');
 
+  const filtered = formations.filter(f =>
+    !search || f.titre.toLowerCase().includes(search.toLowerCase()) ||
+    f.domaine?.libelle.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const { page, setPage, totalPages, paginated, showAll, setShowAll, reset } =
+    usePagination(filtered, PAGE_SIZE);
+
   const load = useCallback(async () => {
     const url = filterAnnee ? `/formations?annee=${filterAnnee}` : '/formations';
     const [f, d, fo, p] = await Promise.all([
       api.get(url), api.get('/domaines'), api.get('/formateurs'), api.get('/participants')
     ]);
     setFormations(f.data); setDomaines(d.data); setFormateurs(fo.data); setParticipants(p.data);
+    reset();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterAnnee]);
+
   useEffect(() => { load(); }, [load]);
 
-  const openCreate = () => { 
-    setEditing(null); 
-    setForm(EMPTY_FORM); 
-    setErrors({}); 
-    setTouched({}); 
-    setModal(true);
+  // reset pagination when search changes
+  useEffect(() => { reset(); }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const openCreate = () => {
+    setEditing(null); setForm(EMPTY_FORM); setErrors({}); setTouched({}); setModal(true);
     window.scrollTo(0, 0);
   };
   const openEdit = (f) => {
@@ -80,10 +91,7 @@ export default function Formations() {
       budget: f.budget || '', lieu: f.lieu || '', domaineId: f.domaine?.id || '',
       formateurId: f.formateur?.id || '', participantIds: f.participants?.map(p => p.id) || []
     });
-    setErrors({}); 
-    setTouched({}); 
-    setModal(true);
-    window.scrollTo(0, 0);
+    setErrors({}); setTouched({}); setModal(true); window.scrollTo(0, 0);
   };
 
   const set = (key) => (e) => {
@@ -101,13 +109,10 @@ export default function Formations() {
   const save = async () => {
     setTouched(Object.fromEntries(Object.keys(RULES).map(k => [k, true])));
     const errs = { ...runValidation(form, RULES) };
-    // Date range check
-    if (form.dateDebut && form.dateFin && new Date(form.dateFin) < new Date(form.dateDebut)) {
+    if (form.dateDebut && form.dateFin && new Date(form.dateFin) < new Date(form.dateDebut))
       errs.dateFin = 'La date de fin doit être après la date de début';
-    }
-    if (form.participantIds.length > 0 && form.participantIds.length < 4) {
+    if (form.participantIds.length > 0 && form.participantIds.length < 4)
       errs.participants = 'Une formation doit avoir au moins 4 participants';
-    }
     setErrors(errs);
     if (Object.values(errs).some(Boolean)) return;
 
@@ -129,26 +134,9 @@ export default function Formations() {
   };
 
   const del = async (f) => {
-    const result = await Swal.fire({
-      title: 'Supprimer la formation ?',
-      html: `<span style="color:#6b6f7e;font-size:14px">« <b>${f.titre}</b> » sera définitivement supprimée.</span>`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Supprimer',
-      cancelButtonText: 'Annuler',
-      confirmButtonColor: '#e04444',
-      cancelButtonColor: '#6b6f7e',
-      reverseButtons: true,
-      focusCancel: true,
-    });
-    if (!result.isConfirmed) return;
-    try {
-      await api.delete(`/formations/${f.id}`);
-      load();
-      toast.success('Formation supprimée', f.titre);
-    } catch {
-      toast.error('Erreur', 'Impossible de supprimer cette formation.');
-    }
+    if (!window.confirm(`Supprimer "${f.titre}" ?`)) return;
+    try { await api.delete(`/formations/${f.id}`); load(); toast.success('Formation supprimée'); }
+    catch { toast.error('Erreur', 'Impossible de supprimer cette formation.'); }
   };
 
   const toggleParticipant = (id) => {
@@ -174,13 +162,7 @@ export default function Formations() {
   };
 
   const fmt = (d) => d ? new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) : '—';
-
   const inputCls = (key) => errors[key] ? 'input-error' : (touched[key] && form[key] ? 'input-valid' : '');
-
-  const filtered = formations.filter(f =>
-    !search || f.titre.toLowerCase().includes(search.toLowerCase()) ||
-    f.domaine?.libelle.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <div>
@@ -206,7 +188,7 @@ export default function Formations() {
               <tr><th>Titre</th><th>Année</th><th>État</th><th>Domaine</th><th>Formateur</th><th>Période</th><th>Durée</th><th>Participants</th><th>Lieu</th><th></th></tr>
             </thead>
             <tbody>
-              {filtered.length === 0 && (
+              {paginated.length === 0 && (
                 <tr><td colSpan={10}>
                   <div className="empty">
                     <div className="empty-icon">📋</div>
@@ -215,7 +197,7 @@ export default function Formations() {
                   </div>
                 </td></tr>
               )}
-              {filtered.map(f => {
+              {paginated.map(f => {
                 const duration = calculateDuration(f.dateDebut, f.dateFin);
                 const state = getState(f.dateDebut, f.dateFin);
                 const cfg = STATE_CONFIG[state];
@@ -250,6 +232,12 @@ export default function Formations() {
             </tbody>
           </table>
         </div>
+
+        <Pagination
+          page={page} setPage={setPage}
+          totalPages={totalPages} total={filtered.length}
+          pageSize={PAGE_SIZE} showAll={showAll} setShowAll={setShowAll}
+        />
       </div>
 
       {modal && (
@@ -259,7 +247,6 @@ export default function Formations() {
               <h2>{editing ? '✏️ Modifier la formation' : '+ Nouvelle formation'}</h2>
               <p>Les champs marqués <span style={{ color: 'var(--danger)' }}>*</span> sont obligatoires.</p>
             </div>
-
             <div className="form-grid">
               <Field label="Titre" error={errors.titre} required className="full">
                 <input value={form.titre} onChange={set('titre')} onBlur={blur('titre')} className={inputCls('titre')} placeholder="Ex: Formation Sécurité Incendie 2025" />
@@ -291,7 +278,6 @@ export default function Formations() {
                   {formateurs.map(f => <option key={f.id} value={f.id}>{f.prenom} {f.nom}</option>)}
                 </select>
               </Field>
-
               <div className="form-group full">
                 <label>
                   Participants
@@ -315,7 +301,6 @@ export default function Formations() {
                 )}
               </div>
             </div>
-
             <div className="modal-actions">
               <button className="btn btn-ghost" onClick={() => setModal(false)}>Annuler</button>
               <button className="btn btn-primary" onClick={save} disabled={saving}>

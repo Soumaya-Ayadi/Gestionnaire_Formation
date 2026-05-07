@@ -1,16 +1,18 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api.jsx';
 import { VALIDATORS, runValidation, useToast } from '../services/validation.jsx';
+import { usePagination, Pagination } from '../services/usePagination.jsx';
 import PropTypes from 'prop-types';
 import Swal from 'sweetalert2';
 
-const EMPTY = { nom: '', prenom: '', email: '', tel: '', type: 'INTERNE', employeurId: '' };
+const PAGE_SIZE = 10;
 
+const EMPTY = { nom: '', prenom: '', email: '', tel: '', type: 'INTERNE', employeurId: '' };
 const RULES = {
-  nom:      [VALIDATORS.required, VALIDATORS.minLen(2)],
-  prenom:   [VALIDATORS.required, VALIDATORS.minLen(2)],
-  email:    [VALIDATORS.email],
-  tel:      [VALIDATORS.phone],
+  nom:    [VALIDATORS.required, VALIDATORS.minLen(2)],
+  prenom: [VALIDATORS.required, VALIDATORS.minLen(2)],
+  email:  [VALIDATORS.email],
+  tel:    [VALIDATORS.phone],
 };
 
 function Field({ label, error, children, required }) {
@@ -22,7 +24,6 @@ function Field({ label, error, children, required }) {
     </div>
   );
 }
-
 Field.propTypes = {
   label: PropTypes.string.isRequired,
   error: PropTypes.string,
@@ -40,31 +41,36 @@ export default function Formateurs() {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [saving, setSaving] = useState(false);
-  
-  // Search/filter states
-  const [searchTerm, setSearchTerm] = useState('');
+  const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('ALL'); // 'ALL', 'INTERNE', 'EXTERNE'
 
-  const load = useCallback(async () => {
-    const [fo, em] = await Promise.all([api.get('/formateurs'), api.get('/employeurs')]);
-    setFormateurs(fo.data); setEmployeurs(em.data);
-  }, []);
-  useEffect(() => { load(); }, [load]);
-
-  // Filtered formateurs based on search and type
-  const filteredFormateurs = formateurs.filter(fo => {
+  // Apply both search and type filters
+  const filtered = formateurs.filter(fo => {
     // Filter by type
     if (filterType !== 'ALL' && fo.type !== filterType) return false;
     
-    // Filter by search term (name or email)
-    if (searchTerm.trim() === '') return true;
+    // Filter by search term
+    if (search.trim() === '') return true;
     
-    const term = searchTerm.toLowerCase().trim();
+    const term = search.toLowerCase().trim();
     const fullName = `${fo.nom} ${fo.prenom}`.toLowerCase();
     const email = (fo.email || '').toLowerCase();
     
     return fullName.includes(term) || email.includes(term);
   });
+
+  const { page, setPage, totalPages, paginated, showAll, setShowAll, reset } =
+    usePagination(filtered, PAGE_SIZE);
+
+  const load = useCallback(async () => {
+    const [fo, em] = await Promise.all([api.get('/formateurs'), api.get('/employeurs')]);
+    setFormateurs(fo.data); setEmployeurs(em.data);
+    reset();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+  useEffect(() => { reset(); }, [search, filterType]); // Reset pagination when filters change
 
   const openCreate = () => { setEditing(null); setForm(EMPTY); setErrors({}); setTouched({}); setModal(true); window.scrollTo(0, 0); };
   const openEdit = (fo) => {
@@ -81,7 +87,6 @@ export default function Formateurs() {
       if (RULES[key]) setErrors(err => ({ ...err, [key]: runValidation({ [key]: val }, rules)[key] || '' }));
     }
   };
-
   const blur = (key) => () => {
     setTouched(t => ({ ...t, [key]: true }));
     if (RULES[key]) {
@@ -103,14 +108,11 @@ export default function Formateurs() {
       const payload = { ...form, employeurId: form.employeurId ? Number(form.employeurId) : null };
       if (editing) await api.put(`/formateurs/${editing.id}`, payload);
       else await api.post('/formateurs', payload);
-      setModal(false);
-      load();
+      setModal(false); load();
       toast.success(editing ? 'Formateur modifié' : 'Formateur créé', `${form.prenom} ${form.nom} a été ${editing ? 'mis à jour' : 'ajouté'}.`);
     } catch (e) {
       toast.error('Erreur', e.response?.data?.error || 'Une erreur est survenue.');
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   };
 
   const del = async (fo) => {
@@ -127,20 +129,20 @@ export default function Formateurs() {
       focusCancel: true,
     });
     if (!result.isConfirmed) return;
-    try {
-      await api.delete(`/formateurs/${fo.id}`);
-      load();
+    try { 
+      await api.delete(`/formateurs/${fo.id}`); 
+      load(); 
       toast.success('Formateur supprimé', `${fo.prenom} ${fo.nom}`);
-    } catch {
-      toast.error('Erreur', 'Impossible de supprimer ce formateur.');
+    } catch { 
+      toast.error('Erreur', 'Impossible de supprimer ce formateur.'); 
     }
   };
 
   const inputCls = (key) => errors[key] ? 'input-error' : (touched[key] && form[key] ? 'input-valid' : '');
 
-  // Clear search and filter
+  // Clear all filters
   const clearFilters = () => {
-    setSearchTerm('');
+    setSearch('');
     setFilterType('ALL');
   };
 
@@ -158,8 +160,8 @@ export default function Formateurs() {
               <input
                 type="text"
                 placeholder="Rechercher par nom ou email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 style={{
                   width: '100%',
                   padding: '10px 12px 10px 36px',
@@ -224,8 +226,8 @@ export default function Formateurs() {
             </button>
           </div>
 
-          {/* Clear Filters Button - only shows when filters are active */}
-          {(searchTerm || filterType !== 'ALL') && (
+          {/* Clear Filters Button */}
+          {(search || filterType !== 'ALL') && (
             <button
               onClick={clearFilters}
               style={{
@@ -246,14 +248,16 @@ export default function Formateurs() {
       </div>
 
       <div className="flex-between mb-24">
-        <span style={{ color: 'var(--muted)', fontSize: 13 }}>
-          <strong style={{ color: 'var(--text)' }}>{filteredFormateurs.length}</strong> formateur{filteredFormateurs.length !== 1 ? 's' : ''}
-          {(searchTerm || filterType !== 'ALL') && (
-            <span style={{ marginLeft: 8, fontSize: 12 }}>
-              (sur {formateurs.length} total)
-            </span>
-          )}
-        </span>
+        <div className="flex gap-10">
+          <span style={{ color: 'var(--muted)', fontSize: 13 }}>
+            <strong style={{ color: 'var(--text)' }}>{filtered.length}</strong> formateur{filtered.length !== 1 ? 's' : ''}
+            {(search || filterType !== 'ALL') && (
+              <span style={{ marginLeft: 8, fontSize: 12 }}>
+                (sur {formateurs.length} total)
+              </span>
+            )}
+          </span>
+        </div>
         <button className="btn btn-primary" onClick={openCreate}>+ Nouveau formateur</button>
       </div>
 
@@ -264,37 +268,33 @@ export default function Formateurs() {
               <tr><th>Nom</th><th>Prénom</th><th>Email</th><th>Téléphone</th><th>Type</th><th>Employeur</th><th></th></tr>
             </thead>
             <tbody>
-              {filteredFormateurs.length === 0 && (
-                <tr>
-                  <td colSpan={7}>
-                    <div className="empty">
-                      <div className="empty-icon">
-                        {searchTerm || filterType !== 'ALL' ? '🔍' : '🎓'}
-                      </div>
-                      <div className="empty-text">
-                        {searchTerm || filterType !== 'ALL' 
-                          ? 'Aucun résultat trouvé' 
-                          : 'Aucun formateur enregistré'}
-                      </div>
-                      <div className="empty-sub">
-                        {searchTerm || filterType !== 'ALL'
-                          ? 'Essayez d\'autres critères de recherche ou effacez les filtres.'
-                          : 'Cliquez sur « Nouveau formateur » pour commencer.'}
-                      </div>
-                      {(searchTerm || filterType !== 'ALL') && (
-                        <button 
-                          onClick={clearFilters}
-                          style={{ marginTop: 16 }}
-                          className="btn btn-ghost btn-sm"
-                        >
-                          ✕ Effacer les filtres
-                        </button>
-                      )}
+              {paginated.length === 0 && (
+                <tr><td colSpan={7}>
+                  <div className="empty">
+                    <div className="empty-icon">
+                      {(search || filterType !== 'ALL') ? '🔍' : '🎓'}
                     </div>
-                  </td>
-                </tr>
+                    <div className="empty-text">
+                      {(search || filterType !== 'ALL') ? 'Aucun résultat trouvé' : 'Aucun formateur enregistré'}
+                    </div>
+                    <div className="empty-sub">
+                      {(search || filterType !== 'ALL')
+                        ? 'Essayez d\'autres critères de recherche ou effacez les filtres.'
+                        : 'Cliquez sur « Nouveau formateur » pour commencer.'}
+                    </div>
+                    {(search || filterType !== 'ALL') && (
+                      <button 
+                        onClick={clearFilters}
+                        style={{ marginTop: 16 }}
+                        className="btn btn-ghost btn-sm"
+                      >
+                        ✕ Effacer les filtres
+                      </button>
+                    )}
+                  </div>
+                </td></tr>
               )}
-              {filteredFormateurs.map(fo => (
+              {paginated.map(fo => (
                 <tr key={fo.id}>
                   <td style={{ fontWeight: 600 }}>{fo.nom}</td>
                   <td>{fo.prenom}</td>
@@ -317,6 +317,12 @@ export default function Formateurs() {
             </tbody>
           </table>
         </div>
+
+        <Pagination
+          page={page} setPage={setPage}
+          totalPages={totalPages} total={filtered.length}
+          pageSize={PAGE_SIZE} showAll={showAll} setShowAll={setShowAll}
+        />
       </div>
 
       {modal && (
@@ -326,7 +332,6 @@ export default function Formateurs() {
               <h2>{editing ? '✏️ Modifier le formateur' : '+ Nouveau formateur'}</h2>
               <p>Renseignez les informations du formateur ci-dessous.</p>
             </div>
-
             <div className="form-grid">
               <Field label="Nom" error={errors.nom} required>
                 <input value={form.nom} onChange={set('nom')} onBlur={blur('nom')} className={inputCls('nom')} placeholder="Dupont" />
@@ -355,7 +360,6 @@ export default function Formateurs() {
                 </Field>
               )}
             </div>
-
             <div className="modal-actions">
               <button className="btn btn-ghost" onClick={() => setModal(false)}>Annuler</button>
               <button className="btn btn-primary" onClick={save} disabled={saving}>
