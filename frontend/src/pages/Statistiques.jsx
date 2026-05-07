@@ -19,9 +19,9 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 // ─── Filter mode definitions ──────────────────────────────────────────────────
 const FILTER_MODES = [
-  { id: 'all',        label: 'Tout',           icon: '📊' },
+  /*{ id: 'all',        label: 'Tout',           icon: '📊' },
   { id: 'year',       label: 'Année',          icon: '📅' },
- /* { id: 'month',      label: 'Mois',           icon: '🗓️' },
+  { id: 'month',      label: 'Mois',           icon: '🗓️' },
   { id: 'range',      label: 'Plage de dates', icon: '📆' },
   { id: 'compare',    label: 'Comparer 2 ans', icon: '⚖️' },*/
 ];
@@ -477,7 +477,7 @@ export default function Statistiques() {
       {/* ─── Filter Bar ─── */}
       <div style={{ marginBottom: 4 }}>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10, gap: 8 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1c24' }}>Filtrer par</span>
+         {/*} <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1c24' }}>Filtrer par</span>*/}
           <FilterBadge mode={filterMode} filters={filters} />
         </div>
         <FilterBar
