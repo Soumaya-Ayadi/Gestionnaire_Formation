@@ -57,7 +57,7 @@ L'app tourne sur : http://localhost:5173
 
 ## Alimenter la base de données (données de test)
 
-Un script Python de génération de données massives est disponible dans `backend/data_generation/seed_data.py`. Il insère 6 années de données (2020–2025) :
+Un script Python de génération de données massives est disponible dans `backend/data_generation/seed_data.py`. Il insère 6 années de données (2020–2026) :
 
 - 500 formateurs
 - 2 000 participants
